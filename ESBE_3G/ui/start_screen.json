@@ -29,7 +29,7 @@
 		"type":"stack_panel","orientation":"horizontal",
 		"controls":[
 			{"ico":{"type":"image","texture":"textures/ESBE_3G","size":[20,20]}},
-			{"ver":{"type":"label","text":"esbe.b"}}
+			{"ver":{"type":"label","text":" §bESBE_3G\n §av0.1"}}
 		]
 	},
 	"copyright@common_buttons.light_content_button":{
