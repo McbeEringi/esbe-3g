@@ -10,22 +10,17 @@
 				"controls":[
 					{"i":{"type":"image","texture":"textures/ESBE_3G","size":[128,128]}},
 					{"s":{"type":"panel","size":[6,6]}},
-					{"v":{"type":"label","font_scale_factor":1.5,"text":"§bESBE_3G§av0.1"}},
-					{"c":{"type":"label","font_scale_factor":1.2,"text":"esbe.c"}}
+					{"n":{"type":"label","font_scale_factor":1.2,"text":"§bEntropyShader\n§7for§bBedrockEdition\n3rdGeneration\n"}},
+					{"s_":{"type":"panel","size":[6,6]}},
+					{"l":{"type":"label","text":"©2020~§b@McbeEringi(twitter)\n§rMIT LICENSE.\nSee'LICENSE'.\n\n§6URL"}},
+					{"u":{"type":"label","font_scale_factor":0.8,"text":"§bOfficial(ja)§r:mcbeeringi.github.io/esbe-3g\n§aMCPEDL§r:coming soon...\n"}}
 				]
 			}},
 			{"r":{
 				"type":"stack_panel",
 				"controls":[
-					{"r":{
-						"type":"stack_panel",
-						"size":["100%",134],
-						"controls":[
-							{"n":{"type":"label","font_scale_factor":1.5,"text":"§bEntropyShader\n§7for§bBedrockEdition\n3rdGeneration\n"}},
-							{"l":{"type":"label","text":"©2020~§b@McbeEringi(twitter)\n§rAllRightsReserved.\nSee'LICENSE'.\n\n§6URL"}},
-							{"u":{"type":"label","font_scale_factor":0.8,"text":"§bOfficial(ja)§r:mcbeeringi.github.io/esbe-3g\n§aMCPEDL§r:coming soon…\n"}}
-						]
-					}},
+					{"v":{"type":"label","font_scale_factor":1.5,"text":"§bESBE_3G §av0.1"}},
+					{"c":{"type":"label","font_scale_factor":1.2,"text":"esbe.c"}},
 					{"0":{"type":"label","text":"esbe.c0"}},{"1":{"type":"label","text":"esbe.c1"}},
 					{"2":{"type":"label","text":"esbe.c2"}},{"3":{"type":"label","text":"esbe.c3"}},
 					{"4":{"type":"label","text":"esbe.c4"}},{"5":{"type":"label","text":"esbe.c5"}},

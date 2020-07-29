@@ -2,7 +2,7 @@
  "format_version":1,
  "header":{
  "name":"ESBE_3G v0.1",
- "description":"A shader for Bedrock\nnauthor: @McbeEringi",
+ "description":"A shader for Bedrock\nby @McbeEringi",
  "uuid":"ABD3317D-86B6-4490-84DB-1609C1B8040D",
  "version":[0,0,1],
  "min_engine_version":[1,8,0]
