@@ -21,8 +21,8 @@
 						"type":"stack_panel",
 						"size":["100%",134],
 						"controls":[
-							{"n":{"type":"label","font_scale_factor":1.5,"text":"§bEntropyShader\n§7for§bBedrockEdition\n2ndGeneration\n"}},
-							{"l":{"type":"label","text":"©2020~§b@McbeEringi(twitter)\n§rAllRightsReserved.\nSee'LICENSE.txt'.\n\n§6URL"}},
+							{"n":{"type":"label","font_scale_factor":1.5,"text":"§bEntropyShader\n§7for§bBedrockEdition\n3rdGeneration\n"}},
+							{"l":{"type":"label","text":"©2020~§b@McbeEringi(twitter)\n§rAllRightsReserved.\nSee'LICENSE'.\n\n§6URL"}},
 							{"u":{"type":"label","font_scale_factor":0.8,"text":"§bOfficial(ja)§r:mcbeeringi.github.io/esbe-3g\n§aMCPEDL§r:coming soon…\n"}}
 						]
 					}},
@@ -36,7 +36,7 @@
 		]
 	},
 	"esbe_scroll@common.scrolling_panel":{"$show_background":false,"$scrolling_content":"start.esbe_panel"},
-	"esbe_fsc@common.fullscreen_header":{"$back_button_has_title":true,"$button_text":"§bESBE§ainfo","$child_control":"start.esbe_scroll"},
+	"esbe_fsc@common.fullscreen_header":{"$back_button_has_title":true,"$button_text":"ESBE info","$child_control":"start.esbe_scroll"},
 	"esbe_main@common.base_screen":{"button_mappings":[{"from_button_id":"button.menu_cancel","to_button_id":"button.menu_exit","mapping_type":"global"}],"$screen_bg_content":"persona.persona_screen_background_content","$screen_content":"start.esbe_fsc"},
 
 
