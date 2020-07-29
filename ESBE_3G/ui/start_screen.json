@@ -3,7 +3,7 @@
 
 	"esbe_panel":{
 		"type":"stack_panel","orientation":"vertical",
-		"size":["100%-8px","100%+31px"],"offset":[4,4],
+		"size":["100%+8px","100%+31px"],"offset":[4,4],
 		"controls":[
 			{"n":{"type":"label","font_scale_factor":1.5,"text":"§bEntropyShader§7for§bBE 3rdGeneration"}},
 			{"s0":{"type":"panel","size":[6,6]}},
