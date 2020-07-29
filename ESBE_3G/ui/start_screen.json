@@ -1,0 +1,55 @@
+{
+	"namespace":"start",
+
+	"esbe_panel":{
+		"type":"stack_panel","orientation":"horizontal",
+		"size":["100%+8px","100%+8px"],"offset":[4,4],
+		"controls":[
+			{"l":{
+				"type":"stack_panel","size":[132,"100%"],
+				"controls":[
+					{"i":{"type":"image","texture":"textures/ESBE_3G","size":[128,128]}},
+					{"s":{"type":"panel","size":[6,6]}},
+					{"v":{"type":"label","font_scale_factor":1.5,"text":"§bESBE_3G§av0.1"}},
+					{"c":{"type":"label","font_scale_factor":1.2,"text":"esbe.c"}}
+				]
+			}},
+			{"r":{
+				"type":"stack_panel",
+				"controls":[
+					{"r":{
+						"type":"stack_panel",
+						"size":["100%",134],
+						"controls":[
+							{"n":{"type":"label","font_scale_factor":1.5,"text":"§bEntropyShader\n§7for§bBedrockEdition\n2ndGeneration\n"}},
+							{"l":{"type":"label","text":"©2020~§b@McbeEringi(twitter)\n§rAllRightsReserved.\nSee'LICENSE.txt'.\n\n§6URL"}},
+							{"u":{"type":"label","font_scale_factor":0.8,"text":"§bOfficial(ja)§r:mcbeeringi.github.io/esbe-3g\n§aMCPEDL§r:coming soon…\n"}}
+						]
+					}},
+					{"0":{"type":"label","text":"esbe.c0"}},{"1":{"type":"label","text":"esbe.c1"}},
+					{"2":{"type":"label","text":"esbe.c2"}},{"3":{"type":"label","text":"esbe.c3"}},
+					{"4":{"type":"label","text":"esbe.c4"}},{"5":{"type":"label","text":"esbe.c5"}},
+					{"6":{"type":"label","text":"esbe.c6"}},{"7":{"type":"label","text":"esbe.c7"}},
+					{"8":{"type":"label","text":"esbe.c8"}},{"9":{"type":"label","text":"esbe.c9"}}
+				]
+			}}
+		]
+	},
+	"esbe_scroll@common.scrolling_panel":{"$show_background":false,"$scrolling_content":"start.esbe_panel"},
+	"esbe_fsc@common.fullscreen_header":{"$back_button_has_title":true,"$button_text":"§bESBE§ainfo","$child_control":"start.esbe_scroll"},
+	"esbe_main@common.base_screen":{"button_mappings":[{"from_button_id":"button.menu_cancel","to_button_id":"button.menu_exit","mapping_type":"global"}],"$screen_bg_content":"persona.persona_screen_background_content","$screen_content":"start.esbe_fsc"},
+
+
+	"esbe_start":{
+		"type":"stack_panel","orientation":"horizontal",
+		"controls":[
+			{"ico":{"type":"image","texture":"textures/ESBE_3G","size":[20,20]}},
+			{"ver":{"type":"label","text":" §bESBE_3G\n §av0.1"}}
+		]
+	},
+	"copyright@common_buttons.light_content_button":{
+		"anchor_from":"bottom_left","anchor_to":"bottom_left","size":[72,26],
+		"$pressed_button_name":"button.menu_buy_game","$button_content":"start.esbe_start",
+		"$default_button_alpha":0.5,"$default_hover_alpha":0.5
+	}
+}
