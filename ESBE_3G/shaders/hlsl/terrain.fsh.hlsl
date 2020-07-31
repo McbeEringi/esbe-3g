@@ -21,12 +21,23 @@ struct PS_Output
 	float4 color : SV_Target;
 };
 
+float aces(float x){
+	//https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
+	return saturate((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14));
+}
+float3 aces3(float3 x){return float3(aces(x.x),aces(x.y),aces(x.z));}
+float3 tone(float3 col,float4 gs){
+	float lum = dot(col,float3(.299,.587,.114));//http://poynton.ca/notes/colour_and_gamma/ColorFAQ.html#RTFToC11
+	col = aces3((col-lum)*gs.a+lum)/aces(2.);
+	return pow(col,1./gs.rgb);
+}
+
 ROOT_SIGNATURE
 void main(in PS_Input PSInput, out PS_Output PSOutput)
 {
 #ifdef BYPASS_PIXEL_SHADER
-    PSOutput.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    return;
+	PSOutput.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	return;
 #else
 
 #if USE_TEXEL_AA
@@ -60,7 +71,7 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 #ifndef SEASONS
 	#if !USE_ALPHA_TEST && !defined(BLEND)
 		diffuse.a = PSInput.color.a;
-	#endif	
+	#endif
 
 	diffuse.rgb *= PSInput.color.rgb;
 #else
@@ -70,6 +81,38 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 	diffuse.a = 1.0f;
 #endif
 
+//=*=*= ESBE_3G start =*=*=//
+
+//datas
+float2 sun = smoothstep(float2(.865,.5),float2(.875,1.),PSInput.uv1.yy);
+float weather = smoothstep(.7,.96,FOG_CONTROL.y);
+float2 daylight = float2(TEXTURE_1.Sample(TextureSampler1,float2(0.,1.)).r,TEXTURE_1.Sample(TextureSampler1,float2(.5,0.)).r);
+daylight = float2(smoothstep(daylight.y-.2,daylight.y+.2,daylight.x));daylight.x*=weather;
+float nv = step(TEXTURE_1.Sample(TextureSampler1,float2(0,0)).r,.5);
+float dusk = min(smoothstep(.3,.5,daylight.y),smoothstep(1.,.8,daylight.y));
+float4 ambient = lerp(//float4(gamma.rgb,saturation)
+		float4(1.,.97,.9,1.15),//indoor
+	lerp(lerp(
+		float4(.9,.93,1.,1.),//night
+		float4(1.15,1.17,1.1,1.2),//day
+	daylight.y),
+		float4(1.4,1.,.7,.8),//dusk
+	dusk),sun.y*nv);
+
+//tonemap
+diffuse.rgb = tone(diffuse.rgb,ambient);
+
+//light_sorce
+float lum = dot(diffuse.rgb,float3(.299,.587,.114));
+diffuse.rgb += max(PSInput.uv1.x-.5,0.)*(1.-lum*lum)*lerp(1.,.3,daylight.x*sun.y)*float3(1.0,0.65,0.3);
+
+//shadow
+float ao = 1.;
+if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,PSInput.color.g);
+diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x);
+
+//=*=*=  ESBE_3G end  =*=*=//
+
 #ifdef FOG
 	diffuse.rgb = lerp( diffuse.rgb, PSInput.fogColor.rgb, PSInput.fogColor.a );
 #endif
@@ -77,7 +120,7 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 	PSOutput.color = diffuse;
 
 #ifdef VR_MODE
-	// On Rift, the transition from 0 brightness to the lowest 8 bit value is abrupt, so clamp to 
+	// On Rift, the transition from 0 brightness to the lowest 8 bit value is abrupt, so clamp to
 	// the lowest 8 bit value.
 	PSOutput.color = max(PSOutput.color, 1 / 255.0f);
 #endif
