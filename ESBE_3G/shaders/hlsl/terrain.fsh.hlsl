@@ -90,18 +90,20 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 //datas
 float2 sun = smoothstep(float2(.865,.5),float2(.875,1.),PSInput.uv1.yy);
 float weather = smoothstep(.7,.96,FOG_CONTROL.y);
-float2 daylight = float2(TEXTURE_1.Sample(TextureSampler1,float2(0.,1.)).r,TEXTURE_1.Sample(TextureSampler1,float2(.5,0.)).r);
-daylight = float2(smoothstep(daylight.y-.2,daylight.y+.2,daylight.x));daylight.x*=weather;
+float br = TEXTURE_1.Sample(TextureSampler1,float2(.5,0.)).r;
+float2 daylight = TEXTURE_1.Sample(TextureSampler1,float2(0.,1.)).rr;daylight=smoothstep(br-.2,br+.2,daylight);daylight.x*=weather;
 float nv = step(TEXTURE_1.Sample(TextureSampler1,float2(0,0)).r,.5);
 float dusk = min(smoothstep(.3,.5,daylight.y),smoothstep(1.,.8,daylight.y));
 float4 ambient = lerp(//float4(gamma.rgb,saturation)
 		float4(1.,.97,.9,1.15),//indoor
+	lerp(
+		float4(.74,.89,.91,.9),//rain
 	lerp(lerp(
 		float4(.9,.93,1.,1.),//night
 		float4(1.15,1.17,1.1,1.2),//day
 	daylight.y),
 		float4(1.4,1.,.7,.8),//dusk
-	dusk),sun.y*nv);
+	dusk),weather),sun.y*nv);
 	if(FOG_COLOR.a<.001)ambient = float4(FOG_COLOR.rgb*.6+.4,.8);
 
 //tonemap
@@ -114,7 +116,7 @@ diffuse.rgb += max(PSInput.uv1.x-.5,0.)*(1.-lum*lum)*lerp(1.,.3,daylight.x*sun.y
 //shadow
 float ao = 1.;
 if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,PSInput.color.g);
-diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x);
+diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
 
 //=*=*=  ESBE_3G end  =*=*=//
 

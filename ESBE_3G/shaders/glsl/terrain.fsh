@@ -107,18 +107,20 @@ vec4 inColor = color;
 //datas
 vec2 sun = smoothstep(vec2(.865,.5),vec2(.875,1.),uv1.yy);
 float weather = smoothstep(.7,.96,FOG_CONTROL.y);
-vec2 daylight = vec2(texture2D(TEXTURE_1,vec2(0.,1.)).r,texture2D(TEXTURE_1,vec2(.5,0.)).r);
-daylight = vec2(smoothstep(daylight.y-.2,daylight.y+.2,daylight.x));daylight.x*=weather;
+float br = texture2D(TEXTURE_1,vec2(.5,0.)).r;
+vec2 daylight = texture2D(TEXTURE_1,vec2(0.,1.)).rr;daylight=smoothstep(br-.2,br+.2,daylight);daylight.x*=weather;
 float nv = step(texture2D(TEXTURE_1,vec2(0)).r,.5);
 float dusk = min(smoothstep(.3,.5,daylight.y),smoothstep(1.,.8,daylight.y));
 vec4 ambient = mix(//vec4(gamma.rgb,saturation)
 		vec4(1.,.97,.9,1.15),//indoor
+	mix(
+		vec4(.74,.89,.91,.9),//rain
 	mix(mix(
 		vec4(.9,.93,1.,1.),//night
 		vec4(1.15,1.17,1.1,1.2),//day
 	daylight.y),
 		vec4(1.4,1.,.7,.8),//dusk
-	dusk),sun.y*nv);
+	dusk),weather),sun.y*nv);
 	if(FOG_COLOR.a<.001)ambient = vec4(FOG_COLOR.rgb*.6+.4,.8);
 
 //tonemap
@@ -131,7 +133,7 @@ diffuse.rgb += max(uv1.x-.5,0.)*(1.-lum*lum)*mix(1.,.3,daylight.x*sun.y)*vec3(1.
 //shadow
 float ao = 1.;
 if(color.r==color.g && color.g==color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,color.g);
-diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x);
+diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
 
 //=*=*=  ESBE_3G end  =*=*=//
 
