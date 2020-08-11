@@ -102,6 +102,7 @@ float4 ambient = lerp(//float4(gamma.rgb,saturation)
 	daylight.y),
 		float4(1.4,1.,.7,.8),//dusk
 	dusk),sun.y*nv);
+	if(FOG_COLOR.a<.001)ambient = float4(FOG_COLOR.rgb*.6+.4,.8);
 
 //tonemap
 diffuse.rgb = tone(diffuse.rgb,ambient);
