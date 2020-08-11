@@ -31,6 +31,7 @@ varying vec4 fogColor;
 #include "uniformShaderConstants.h"
 #include "util.h"
 uniform vec2 FOG_CONTROL;
+uniform vec4 FOG_COLOR;
 uniform HM float TOTAL_REAL_WORLD_TIME;
 LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
 LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
@@ -45,6 +46,10 @@ vec3 tone(vec3 col,vec4 gs){
 	float lum = dot(col,vec3(.299,.587,.114));//http://poynton.ca/notes/colour_and_gamma/ColorFAQ.html#RTFToC11
 	col = aces3((col-lum)*gs.a+lum)/aces(2.);
 	return pow(col,1./gs.rgb);
+}
+float sat(vec3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
+	float v=max(max(col.r,col.g),col.b);
+	return v>0.?(v-min(min(col.r,col.g),col.b))/v:0.;
 }
 
 void main()
@@ -114,6 +119,7 @@ vec4 ambient = mix(//vec4(gamma.rgb,saturation)
 	daylight.y),
 		vec4(1.4,1.,.7,.8),//dusk
 	dusk),sun.y*nv);
+	if(FOG_COLOR.a<.001)ambient = vec4(FOG_COLOR.rgb*.6+.4,.8);
 
 //tonemap
 diffuse.rgb = tone(diffuse.rgb,ambient);

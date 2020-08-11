@@ -31,6 +31,10 @@ float3 tone(float3 col,float4 gs){
 	col = aces3((col-lum)*gs.a+lum)/aces(2.);
 	return pow(col,1./gs.rgb);
 }
+float sat(float3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
+	float v=max(max(col.r,col.g),col.b);
+	return v>0.?(v-min(min(col.r,col.g),col.b))/v:0.;
+}
 
 ROOT_SIGNATURE
 void main(in PS_Input PSInput, out PS_Output PSOutput)
