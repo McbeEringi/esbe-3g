@@ -6,10 +6,6 @@
 		"size":["100%+8px","100%+31px"],"offset":[4,4],
 		"controls":[
 			{"i":{"type":"image","texture":"textures/ESBE_3G","size":["50%","default"]}},
-			{"s1":{"type":"panel","size":[6,6]}},
-			{"l":{"type":"label","text":"MIT LICENSE\n©2020~§b@McbeEringi(twitter)\n\n§6URL"}},
-			{"u":{"type":"label","font_scale_factor":0.8,"text":"§bOfficial(ja)§r:mcbeeringi.github.io/esbe-3g\n§aMCPEDL§r:coming soon..."}},
-			{"s2":{"type":"panel","size":[6,6]}},
 			{"c":{"type":"label","font_scale_factor":1.2,"text":"esbe.c"}},
 			{"0":{"type":"label","text":"esbe.c0"}},{"1":{"type":"label","text":"esbe.c1"}},
 			{"2":{"type":"label","text":"esbe.c2"}},{"3":{"type":"label","text":"esbe.c3"}},
