@@ -6,7 +6,7 @@
 		"size":["100%+8px","100%+31px"],"offset":[4,4],
 		"controls":[
 			{"i":{"type":"image","texture":"textures/ESBE_3G","size":["50%","default"]}},
-			{"c":{"type":"label","font_scale_factor":1.2,"text":"esbe.c"}},
+			{"c":{"type":"label","font_scale_factor":1.2,"text":"esbe.c","color":[0.4,0.8,0.67]}},
 			{"0":{"type":"label","text":"esbe.c0"}},{"1":{"type":"label","text":"esbe.c1"}},
 			{"2":{"type":"label","text":"esbe.c2"}},{"3":{"type":"label","text":"esbe.c3"}},
 			{"4":{"type":"label","text":"esbe.c4"}},{"5":{"type":"label","text":"esbe.c5"}},
