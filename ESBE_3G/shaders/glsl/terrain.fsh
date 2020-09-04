@@ -27,9 +27,13 @@ varying vec4 color;
 #ifdef FOG
 varying vec4 fogColor;
 #endif
+varying HM vec3 cPos;
+varying HM vec3 wPos;
+varying float wf;
 
 #include "uniformShaderConstants.h"
 #include "util.h"
+#include "snoise.h"
 uniform vec2 FOG_CONTROL;
 uniform vec4 FOG_COLOR;
 uniform HM float TOTAL_REAL_WORLD_TIME;
@@ -134,6 +138,12 @@ diffuse.rgb += max(uv1.x-.5,0.)*(1.-lum*lum)*mix(1.,.3,daylight.x*sun.y)*vec3(1.
 float ao = 1.;
 if(color.r==color.g && color.g==color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,color.g);
 diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
+
+if(wf>.5){
+vec2 skp = wPos.xz*.5+(fract(cPos.xz*.625+.001)-.5)*normalize(abs(wPos)).xz;
+diffuse.rgb = mix(diffuse.rgb,vec3(snoise(skp)*.5+.5)*.8,.5);
+diffuse = mix(diffuse,vec4(1),smoothstep(2.,.5,distance(vec2(6,0),skp)));
+}
 
 //=*=*=  ESBE_3G end  =*=*=//
 

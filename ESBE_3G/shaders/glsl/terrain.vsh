@@ -2,6 +2,11 @@
 // This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.
 
 #include "vertexVersionCentroid.h"
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+	#define HM highp
+#else
+	#define HM mediump
+#endif
 #if __VERSION__ >= 300
 	#ifndef BYPASS_PIXEL_SHADER
 		_centroid out vec2 uv0;
@@ -21,6 +26,9 @@
 #ifdef FOG
 	varying vec4 fogColor;
 #endif
+varying HM vec3 cPos;
+varying HM vec3 wPos;
+varying float wf;
 
 #include "uniformWorldConstants.h"
 #include "uniformPerFrameConstants.h"
@@ -39,6 +47,7 @@ const float DIST_DESATURATION = 56.0 / 255.0; //WARNING this value is also hardc
 
 void main()
 {
+		wf=0.;
 		POS4 worldPos;
 #ifdef AS_ENTITY_RENDERER
 		POS4 pos = WORLDVIEWPROJ * POSITION;
@@ -54,6 +63,8 @@ void main()
 		pos = PROJ * pos;
 #endif
 		gl_Position = pos;
+		cPos = POSITION.xyz;
+		wPos = worldPos.xyz;
 
 #ifndef BYPASS_PIXEL_SHADER
 		uv0 = TEXCOORD_0;
@@ -62,15 +73,7 @@ void main()
 #endif
 
 ///// find distance from the camera
-
-#if defined(FOG) || defined(BLEND)
-	#ifdef FANCY
-		vec3 relPos = -worldPos.xyz;
-		float cameraDepth = length(relPos);
-	#else
-		float cameraDepth = pos.z;
-	#endif
-#endif
+float cameraDepth = length(-worldPos.xyz);
 
 ///// apply fog
 
@@ -85,26 +88,10 @@ void main()
 #endif
 
 ///// blended layer (mostly water) magic
-#ifdef BLEND
-	//Mega hack: only things that become opaque are allowed to have vertex-driven transparency in the Blended layer...
-	//to fix this we'd need to find more space for a flag in the vertex format. color.a is the only unused part
-	bool shouldBecomeOpaqueInTheDistance = color.a < 0.95;
-	if(shouldBecomeOpaqueInTheDistance) {
-		#ifdef FANCY  /////enhance water
-			float cameraDist = cameraDepth / FAR_CHUNKS_DISTANCE;
-			color = COLOR;
-		#else
-			// Completely insane, but if I don't have these two lines in here, the water doesn't render on a Nexus 6
-			vec4 surfColor = vec4(color.rgb, 1.0);
-			color = surfColor;
-
-			vec3 relPos = -worldPos.xyz;
-			float camDist = length(relPos);
-			float cameraDist = camDist / FAR_CHUNKS_DISTANCE;
-		#endif //FANCY
-
-		float alphaFadeOut = clamp(cameraDist, 0.0, 1.0);
-		color.a = mix(color.a, 1.0, alphaFadeOut);
+#ifndef SEASONS
+	if(.05<color.a&&color.a<.95) {
+		wf=1.;
+		color.a = mix(color.a,1.,clamp(cameraDepth/FAR_CHUNKS_DISTANCE,0.,1.));
 	}
 #endif
 
