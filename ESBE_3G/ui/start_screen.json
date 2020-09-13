@@ -2,36 +2,16 @@
 	"namespace":"start",
 
 	"esbe_panel":{
-		"type":"stack_panel","orientation":"horizontal","size":["100%","100%"],
+		"type":"stack_panel","orientation":"vertical",
 		"controls":[
-			{"i":{"type":"image","texture":"textures/info","size":["50%","100%"]}},
-			{"esbe_panel":{
-				"type":"stack_panel","orientation":"vertical","size":["50%","100%"],
-				"controls":[
-				{"c":{"type":"label","font_scale_factor":1.5,"text":"esbe.c","color":[0.4,0.8,0.67]}},
-				{"0":{"type":"label","text":"esbe.c0"}},{"1":{"type":"label","text":"esbe.c1"}},
-				{"2":{"type":"label","text":"esbe.c2"}},{"3":{"type":"label","text":"esbe.c3"}},
-				{"4":{"type":"label","text":"esbe.c4"}},{"5":{"type":"label","text":"esbe.c5"}},
-				{"6":{"type":"label","text":"esbe.c6"}},{"7":{"type":"label","text":"esbe.c7"}},
-				{"8":{"type":"label","text":"esbe.c8"}},{"9":{"type":"label","text":"esbe.c9"}}
-			]}}
+			{"i":{"type":"image","texture":"textures/info","size":["100%-16px","27%x"]}},{"c":{"type":"label","font_scale_factor":1.5,"text":"v0.1","color":[0.4,0.8,0.67]}},
+			{"0":{"type":"label","text":"esbe.c0"}},{"1":{"type":"label","text":"esbe.c1"}},{"2":{"type":"label","text":"esbe.c2"}},{"3":{"type":"label","text":"esbe.c3"}},
+			{"4":{"type":"label","text":"esbe.c4"}},{"5":{"type":"label","text":"esbe.c5"}},{"6":{"type":"label","text":"esbe.c6"}},{"7":{"type":"label","text":"esbe.c7"}}
 		]
 	},
-	//"esbe_scroll@common.scrolling_panel":{"$show_background":false,"$scrolling_content":"start.esbe_panel"},
-	"esbe_fsc@common.fullscreen_header":{"$back_button_has_title":true,"$button_text":"ESBE info","$child_control":"start.esbe_panel"},
+	"esbe_scroll@common.scrolling_panel":{"$show_background":false,"$scrolling_content":"start.esbe_panel"},"esbe_fsc@common.fullscreen_header":{"$back_button_has_title":true,"$button_text":"ESBE info","$child_control":"start.esbe_scroll"},
 	"esbe_main@common.base_screen":{"button_mappings":[{"from_button_id":"button.menu_cancel","to_button_id":"button.menu_exit","mapping_type":"global"}],"$screen_bg_content":"persona.persona_screen_background_content","$screen_content":"start.esbe_fsc"},
 
-
-	"esbe_start":{
-		"type":"stack_panel","orientation":"horizontal",
-		"controls":[
-			{"ico":{"type":"image","texture":"textures/ESBE_3G","size":[20,20]}},
-			{"ver":{"type":"label","text":" §bESBE_3G\n §av0.1"}}
-		]
-	},
-	"copyright@common_buttons.light_content_button":{
-		"anchor_from":"bottom_left","anchor_to":"bottom_left","size":[72,26],
-		"$pressed_button_name":"button.menu_buy_game","$button_content":"start.esbe_start",
-		"$default_button_alpha":0.5,"$default_hover_alpha":0.5
-	}
+	"esbe_start":{"type":"stack_panel","orientation":"horizontal","controls":[{"ico":{"type":"image","texture":"textures/ESBE_3G","size":[20,20]}},{"ver":{"type":"label","text":" §bESBE_3G\n §av0.1"}}]},
+	"copyright@common_buttons.light_content_button":{"anchor_from":"bottom_left","anchor_to":"bottom_left","size":[72,26],"$pressed_button_name":"button.menu_buy_game","$button_content":"start.esbe_start","$default_button_alpha":0.5,"$default_hover_alpha":0.5}
 }
