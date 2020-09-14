@@ -89,8 +89,9 @@ vec4 inColor = color;
 	diffuse.a *= inColor.a;
 #endif
 
+vec4 tex1 = texture2D( TEXTURE_1, uv1 );
 #if !defined(ALWAYS_LIT)
-	diffuse *= texture2D( TEXTURE_1, uv1 );
+	diffuse *= tex1;
 #endif
 
 #ifndef SEASONS
