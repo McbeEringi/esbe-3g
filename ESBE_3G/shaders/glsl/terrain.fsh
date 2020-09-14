@@ -41,6 +41,7 @@ LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
 LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
 LAYOUT_BINDING(2) uniform sampler2D TEXTURE_2;
 
+#define saturate(x) clamp(x,0.,1.)
 float aces(float x){
 	//https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
 	return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);
@@ -110,6 +111,7 @@ vec4 tex1 = texture2D( TEXTURE_1, uv1 );
 //=*=*= ESBE_3G start =*=*=//
 
 //datas
+HM float time = TOTAL_REAL_WORLD_TIME;
 vec2 sun = smoothstep(vec2(.865,.5),vec2(.875,1.),uv1.yy);
 float weather = smoothstep(.7,.96,FOG_CONTROL.y);
 float br = texture2D(TEXTURE_1,vec2(.5,0.)).r;
@@ -141,13 +143,13 @@ if(color.r==color.g && color.g==color.b)ao = smoothstep(.48*daylight.y,.52*dayli
 diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
 
 if(wf>.5){
-	highp vec2 grid = (cPos.xz-TOTAL_REAL_WORLD_TIME)*mat2(1,-.5,.5,.5);
-	grid+=sin(grid.yx*vec2(3.14,1.57)+TOTAL_REAL_WORLD_TIME*4.)*.1;
-	vec3 nwpos = normalize(abs(wPos));
-	vec2 skp = (wPos.xz*.4-(fract(grid*.625+.001)-.5)*nwpos.xz/nwpos.y*.1)/abs(wPos.y);
-	vec2 ppos = vec2(atan(skp.x,skp.y),1./length(skp));
-	diffuse.rgb = mix(diffuse.rgb,(FOG_COLOR.rgb+tex1.rgb)*.5,smoothstep(-.5,1.,snoise(skp-vec2(TOTAL_REAL_WORLD_TIME*.02,0)))*.8);
-	diffuse = mix(diffuse,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));
+	highp vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
+	vec3 nwpos = normalize(abs(wPos));float omnwposy = 1.-nwpos.y;
+	vec2 skp = (wPos.xz*.4-(fract(grid*.625+.001)-.5)*nwpos.xz/nwpos.y*.2)/abs(wPos.y);
+	diffuse = mix(diffuse,FOG_COLOR,.02+.98*omnwposy*omnwposy*omnwposy*omnwposy*omnwposy);//fresnel
+	diffuse.rgb = mix(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omnwposy);
+	diffuse.rgb = mix(diffuse.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(nwpos.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*nwpos.y);
+	diffuse = mix(diffuse,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));//sun
 }
 
 //=*=*=  ESBE_3G end  =*=*=//
