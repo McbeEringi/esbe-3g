@@ -13,6 +13,9 @@ struct VS_Input {
 
 struct PS_Input {
 	float4 position : SV_Position;
+	float3 cPos : chunkedPos;
+	float3 wPos : worldPos;
+	float wf : WaterFlag;
 
 #ifndef BYPASS_PIXEL_SHADER
 	lpfloat4 color : COLOR;
@@ -57,16 +60,16 @@ void main(in VS_Input VSInput, out PS_Input PSInput)
 		float3 worldPos = PSInput.position;
 #else
 		float3 worldPos = (VSInput.position.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
-	
+
 		// Transform to view space before projection instead of all at once to avoid floating point errors
 		// Not required for entities because they are already offset by camera translation before rendering
 		// World position here is calculated above and can get huge
 	#ifdef INSTANCEDSTEREO
 		int i = VSInput.instanceID;
-	
+
 		PSInput.position = mul(WORLDVIEW_STEREO[i], float4(worldPos, 1 ));
 		PSInput.position = mul(PROJ_STEREO[i], PSInput.position);
-	
+
 	#else
 		PSInput.position = mul(WORLDVIEW, float4( worldPos, 1 ));
 		PSInput.position = mul(PROJ, PSInput.position);
@@ -75,7 +78,7 @@ void main(in VS_Input VSInput, out PS_Input PSInput)
 #endif
 #ifdef GEOMETRY_INSTANCEDSTEREO
 		PSInput.instanceID = VSInput.instanceID;
-#endif 
+#endif
 #ifdef VERTEXSHADER_INSTANCEDSTEREO
 		PSInput.renTarget_id = VSInput.instanceID;
 #endif
@@ -116,7 +119,7 @@ void main(in VS_Input VSInput, out PS_Input PSInput)
 			float camDist = length(relPos);
 			float cameraDist = camDist / FAR_CHUNKS_DISTANCE;
 		#endif //FANCY
-		
+
 		float alphaFadeOut = clamp(cameraDist, 0.0, 1.0);
 		PSInput.color.a = lerp(VSInput.color.a, 1.0, alphaFadeOut);
 	}

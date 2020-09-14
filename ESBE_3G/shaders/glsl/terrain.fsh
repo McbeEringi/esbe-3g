@@ -142,6 +142,7 @@ float ao = 1.;
 if(color.r==color.g && color.g==color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,color.g);
 diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
 
+//water
 if(wf>.5){
 	highp vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
 	vec3 nwpos = normalize(abs(wPos));float omnwposy = 1.-nwpos.y;

@@ -1,9 +1,13 @@
 #include "ShaderConstants.fxh"
 #include "util.fxh"
+#include "snoise.fxh"
 
 struct PS_Input
 {
 	float4 position : SV_Position;
+	float3 cPos : chunkedPos;
+	float3 wPos : worldPos;
+	float wf : WaterFlag;
 
 #ifndef BYPASS_PIXEL_SHADER
 	lpfloat4 color : COLOR;
@@ -68,8 +72,9 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 	diffuse.a *= PSInput.color.a;
 #endif
 
+float4 tex1 = TEXTURE_1.Sample(TextureSampler1, PSInput.uv1);
 #if !defined(ALWAYS_LIT)
-	diffuse = diffuse * TEXTURE_1.Sample(TextureSampler1, PSInput.uv1);
+	diffuse = diffuse * tex1;
 #endif
 
 #ifndef SEASONS
@@ -88,6 +93,7 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 //=*=*= ESBE_3G start =*=*=//
 
 //datas
+float time = TOTAL_REAL_WORLD_TIME;
 float2 sun = smoothstep(float2(.865,.5),float2(.875,1.),PSInput.uv1.yy);
 float weather = smoothstep(.7,.96,FOG_CONTROL.y);
 float br = TEXTURE_1.Sample(TextureSampler1,float2(.5,0.)).r;
@@ -117,6 +123,17 @@ diffuse.rgb += max(PSInput.uv1.x-.5,0.)*(1.-lum*lum)*lerp(1.,.3,daylight.x*sun.y
 float ao = 1.;
 if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,PSInput.color.g);
 diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
+
+//water
+if(PSInput.wf>.5){
+	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
+	float3 nwpos = normalize(abs(wPSInput.Pos));float omnwposy = 1.-nwpos.y;
+	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625+.001)-.5)*nwpos.xz/nwpos.y*.2)/abs(wPos.y);
+	diffuse = lerp(diffuse,FOG_COLOR,.02+.98*omnwposy*omnwposy*omnwposy*omnwposy*omnwposy);//fresnel
+	diffuse.rgb = lerp(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omnwposy);
+	diffuse.rgb = lerp(diffuse.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(nwpos.xz)*.7),smoothstep(-.5,1.,snoise(skp-float2(time*.02,0.)))*nwpos.y);
+	diffuse = lerp(diffuse,1.,smoothstep(.8,.3,distance(float2(-2,0),skp)));//sun
+}
 
 //=*=*=  ESBE_3G end  =*=*=//
 
