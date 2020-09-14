@@ -42,14 +42,8 @@ static const float DIST_DESATURATION = 56.0 / 255.0; //WARNING this value is als
 
 
 ROOT_SIGNATURE
-void main(in VS_Input VSInput, out PS_Input PSInput)
-{
-#ifndef BYPASS_PIXEL_SHADER
-	PSInput.uv0 = VSInput.uv0;
-	PSInput.uv1 = VSInput.uv1;
-	PSInput.color = VSInput.color;
-#endif
-
+void main(in VS_Input VSInput, out PS_Input PSInput){
+PSInput.wf=0.;
 #ifdef AS_ENTITY_RENDERER
 	#ifdef INSTANCEDSTEREO
 		int i = VSInput.instanceID;
@@ -60,69 +54,51 @@ void main(in VS_Input VSInput, out PS_Input PSInput)
 		float3 worldPos = PSInput.position;
 #else
 		float3 worldPos = (VSInput.position.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
-
 		// Transform to view space before projection instead of all at once to avoid floating point errors
 		// Not required for entities because they are already offset by camera translation before rendering
 		// World position here is calculated above and can get huge
 	#ifdef INSTANCEDSTEREO
 		int i = VSInput.instanceID;
-
 		PSInput.position = mul(WORLDVIEW_STEREO[i], float4(worldPos, 1 ));
 		PSInput.position = mul(PROJ_STEREO[i], PSInput.position);
-
 	#else
 		PSInput.position = mul(WORLDVIEW, float4( worldPos, 1 ));
 		PSInput.position = mul(PROJ, PSInput.position);
 	#endif
-
 #endif
+PSInput.cPos=VSInput.position;
+PSInput.wPos=worldPos;
+#ifndef BYPASS_PIXEL_SHADER
+	PSInput.uv0 = VSInput.uv0;
+	PSInput.uv1 = VSInput.uv1;
+	PSInput.color = VSInput.color;
+#endif
+
 #ifdef GEOMETRY_INSTANCEDSTEREO
-		PSInput.instanceID = VSInput.instanceID;
+	PSInput.instanceID = VSInput.instanceID;
 #endif
 #ifdef VERTEXSHADER_INSTANCEDSTEREO
-		PSInput.renTarget_id = VSInput.instanceID;
+	PSInput.renTarget_id = VSInput.instanceID;
 #endif
+
 ///// find distance from the camera
+float cameraDepth = length(-worldPos);
 
-#if defined(FOG) || defined(BLEND)
-	#ifdef FANCY
-		float3 relPos = -worldPos;
-		float cameraDepth = length(relPos);
-	#else
-		float cameraDepth = PSInput.position.z;
-	#endif
-#endif
-
-	///// apply fog
-
+///// apply fog
 #ifdef FOG
 	float len = cameraDepth / RENDER_DISTANCE;
-#ifdef ALLOW_FADE
-	len += RENDER_CHUNK_FOG_ALPHA.r;
-#endif
-
+	#ifdef ALLOW_FADE
+		len += RENDER_CHUNK_FOG_ALPHA.r;
+	#endif
 	PSInput.fogColor.rgb = FOG_COLOR.rgb;
 	PSInput.fogColor.a = clamp((len - FOG_CONTROL.x) / (FOG_CONTROL.y - FOG_CONTROL.x), 0.0, 1.0);
-
 #endif
 
 ///// blended layer (mostly water) magic
-#ifdef BLEND
-	//Mega hack: only things that become opaque are allowed to have vertex-driven transparency in the Blended layer...
-	//to fix this we'd need to find more space for a flag in the vertex format. color.a is the only unused part
-	bool shouldBecomeOpaqueInTheDistance = VSInput.color.a < 0.95;
-	if(shouldBecomeOpaqueInTheDistance) {
-		#ifdef FANCY  /////enhance water
-			float cameraDist = cameraDepth / FAR_CHUNKS_DISTANCE;
-		#else
-			float3 relPos = -worldPos.xyz;
-			float camDist = length(relPos);
-			float cameraDist = camDist / FAR_CHUNKS_DISTANCE;
-		#endif //FANCY
-
-		float alphaFadeOut = clamp(cameraDist, 0.0, 1.0);
-		PSInput.color.a = lerp(VSInput.color.a, 1.0, alphaFadeOut);
+#ifndef SEASONS
+	if(.05<VSInput.color.a && VSInput.color.a<.95) {
+		PSInput.wf=1.;
+		PSInput.color.a = lerp(VSInput.color.a,1.,saturate(cameraDepth/FAR_CHUNKS_DISTANCE));
 	}
 #endif
-
 }

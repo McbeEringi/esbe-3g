@@ -57,8 +57,7 @@ float sat(vec3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
 	return v>0.?(v-min(min(col.r,col.g),col.b))/v:0.;
 }
 
-void main()
-{
+void main(){
 #ifdef BYPASS_PIXEL_SHADER
 	gl_FragColor = vec4(0, 0, 0, 0);
 	return;

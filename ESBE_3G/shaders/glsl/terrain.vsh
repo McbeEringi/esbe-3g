@@ -45,30 +45,27 @@ const float rB = 1.0;
 const vec3 UNIT_Y = vec3(0,1,0);
 const float DIST_DESATURATION = 56.0 / 255.0; //WARNING this value is also hardcoded in the water color, don'tchange
 
-void main()
-{
-		wf=0.;
-		POS4 worldPos;
+void main(){
+wf=0.;
+POS4 worldPos;
 #ifdef AS_ENTITY_RENDERER
-		POS4 pos = WORLDVIEWPROJ * POSITION;
-		worldPos = pos;
+	POS4 pos = WORLDVIEWPROJ * POSITION;
+	worldPos = pos;
 #else
-		worldPos.xyz = (POSITION.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
-		worldPos.w = 1.0;
-
-		// Transform to view space before projection instead of all at once to avoid floating point errors
-		// Not required for entities because they are already offset by camera translation before rendering
-		// World position here is calculated above and can get huge
-		POS4 pos = WORLDVIEW * worldPos;
-		pos = PROJ * pos;
+	worldPos.xyz = (POSITION.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
+	worldPos.w = 1.0;
+	// Transform to view space before projection instead of all at once to avoid floating point errors
+	// Not required for entities because they are already offset by camera translation before rendering
+	// World position here is calculated above and can get huge
+	POS4 pos = WORLDVIEW * worldPos;
+	pos = PROJ * pos;
 #endif
-		gl_Position = pos;
-		cPos = POSITION.xyz;
-		wPos = worldPos.xyz;
-
+gl_Position = pos;
+cPos = POSITION.xyz;
+wPos = worldPos.xyz;
 #ifndef BYPASS_PIXEL_SHADER
-		uv0 = TEXCOORD_0;
-		uv1 = TEXCOORD_1;
+	uv0 = TEXCOORD_0;
+	uv1 = TEXCOORD_1;
 	color = COLOR;
 #endif
 
@@ -76,13 +73,11 @@ void main()
 float cameraDepth = length(-worldPos.xyz);
 
 ///// apply fog
-
 #ifdef FOG
 	float len = cameraDepth / RENDER_DISTANCE;
 	#ifdef ALLOW_FADE
 		len += RENDER_CHUNK_FOG_ALPHA;
 	#endif
-
 	fogColor.rgb = FOG_COLOR.rgb;
 	fogColor.a = clamp((len - FOG_CONTROL.x) / (FOG_CONTROL.y - FOG_CONTROL.x), 0.0, 1.0);
 #endif

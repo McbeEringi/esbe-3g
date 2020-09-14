@@ -2,8 +2,7 @@
 #include "util.fxh"
 #include "snoise.fxh"
 
-struct PS_Input
-{
+struct PS_Input{
 	float4 position : SV_Position;
 	float3 cPos : chunkedPos;
 	float3 wPos : worldPos;
@@ -20,10 +19,7 @@ struct PS_Input
 #endif
 };
 
-struct PS_Output
-{
-	float4 color : SV_Target;
-};
+struct PS_Output{float4 color : SV_Target;};
 
 float aces(float x){
 	//https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
@@ -41,8 +37,7 @@ float sat(float3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
 }
 
 ROOT_SIGNATURE
-void main(in PS_Input PSInput, out PS_Output PSOutput)
-{
+void main(in PS_Input PSInput, out PS_Output PSOutput){
 #ifdef BYPASS_PIXEL_SHADER
 	PSOutput.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	return;
@@ -126,9 +121,9 @@ diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
 
 //water
 if(PSInput.wf>.5){
-	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
-	float3 nwpos = normalize(abs(wPSInput.Pos));float omnwposy = 1.-nwpos.y;
-	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625+.001)-.5)*nwpos.xz/nwpos.y*.2)/abs(wPos.y);
+	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*float2(3.14,1.57)+time*4.)*.1;
+	float3 nwpos = normalize(abs(PSInput.wPos));float omnwposy = 1.-nwpos.y;
+	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625+.001)-.5)*nwpos.xz/nwpos.y*.2)/abs(PSInput.wPos.y);
 	diffuse = lerp(diffuse,FOG_COLOR,.02+.98*omnwposy*omnwposy*omnwposy*omnwposy*omnwposy);//fresnel
 	diffuse.rgb = lerp(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omnwposy);
 	diffuse.rgb = lerp(diffuse.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(nwpos.xz)*.7),smoothstep(-.5,1.,snoise(skp-float2(time*.02,0.)))*nwpos.y);
