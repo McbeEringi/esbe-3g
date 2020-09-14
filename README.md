@@ -11,7 +11,7 @@ or
 [Official(ja)](https://mcbeeringi.github.io/esbe-3g)  
 # LICENSE
 published under MIT LICENSE
-See ESBE_3G/LICENSE.txt  
+See LICENSE  
 # Photos
 v0.1  
 ![img](docs/1.jpg)![img](docs/2.jpg)![img](docs/3.jpg)![img](docs/4.jpg)
