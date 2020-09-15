@@ -90,6 +90,12 @@ PSInput.wf=0.;
 #endif
 PSInput.cPos=VSInput.position;
 PSInput.wPos=worldPos;
+float wav = sin((VSInput.position.x+VSInput.position.z+(VSInput.position.y-TOTAL_REAL_WORLD_TIME)*2.)*1.57);
+#ifdef ALPHA_TEST
+	float3 frp = frac(VSInput.position);
+	if((VSInput.color.r!=VSInput.color.g&&VSInput.color.g!=VSInput.color.b && frp.y!=.015625)||(frp.y==.9375&&(frp.x==0.||frp.z==0.)))
+		PSInput.position.x += wav*.02;
+#endif
 
 #ifdef GEOMETRY_INSTANCEDSTEREO
 	PSInput.instanceID = VSInput.instanceID;
