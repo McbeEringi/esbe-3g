@@ -39,6 +39,7 @@ static const float rB = 1.0;
 static const float3 UNIT_Y = float3(0, 1, 0);
 static const float DIST_DESATURATION = 56.0 / 255.0; //WARNING this value is also hardcoded in the water color, don'tchange
 
+#ifdef FANCY
 float gwav(float x,float r,float l){//http://marupeke296.com/Shader_No5_PeakWave.html
 	static const float pi=3.1415926535;
 	float a = l/pi/2.;float b = r*l/pi/4.;
@@ -46,6 +47,7 @@ float gwav(float x,float r,float l){//http://marupeke296.com/Shader_No5_PeakWave
 	for(int i=0;i<3;i++)T=T-(a*T-b*sin(T)-x)/(a-b*cos(T));
 	return r*l*cos(T)/pi/4.;
 }
+#endif
 
 ROOT_SIGNATURE
 void main(in VS_Input VSInput, out PS_Input PSInput){
@@ -67,7 +69,12 @@ PSInput.wf=0.;
 		float3 worldPos = (VSInput.position.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
 		#ifndef SEASONS
 			if(.05<VSInput.color.a&&VSInput.color.a<.95)
-				worldPos.y+=gwav((VSInput.position.x+VSInput.position.z)-TOTAL_REAL_WORLD_TIME*2.,mix(.2,1.,VSInput.uv1.y),4.)*frac(VSInput.position.y)*.2;
+				#ifdef FANCY
+					worldPos.y+=gwav(VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.,mix(.2,1.,VSInput.uv1.y),4.)*frac(VSInput.position.y)*.2;
+				#else
+					float wwav =sin((VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
+					worldPos.y+=(wwav*wwav-.5)*frac(VSInput.position.y)*.07;
+				#endif
 		#endif
 		// Transform to view space before projection instead of all at once to avoid floating point errors
 		// Not required for entities because they are already offset by camera translation before rendering
