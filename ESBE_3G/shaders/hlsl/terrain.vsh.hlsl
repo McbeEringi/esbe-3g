@@ -1,6 +1,6 @@
 #include "ShaderConstants.fxh"
 
-struct VS_Input {
+struct VS_Input{
 	float3 position : POSITION;
 	float4 color : COLOR;
 	float2 uv0 : TEXCOORD_0;
@@ -11,7 +11,7 @@ struct VS_Input {
 };
 
 
-struct PS_Input {
+struct PS_Input{
 	float4 position : SV_Position;
 	float3 cPos : chunkedPos;
 	float3 wPos : worldPos;
@@ -34,16 +34,27 @@ struct PS_Input {
 #endif
 };
 
-
 static const float rA = 1.0;
 static const float rB = 1.0;
 static const float3 UNIT_Y = float3(0, 1, 0);
 static const float DIST_DESATURATION = 56.0 / 255.0; //WARNING this value is also hardcoded in the water color, don'tchange
 
+float gwav(float x,float r,float l){//http://marupeke296.com/Shader_No5_PeakWave.html
+	static const float pi=3.1415926535;
+	float a = l/pi/2.;float b = r*l/pi/4.;
+	float T = x/a;
+	for(int i=0;i<3;i++)T=T-(a*T-b*sin(T)-x)/(a-b*cos(T));
+	return r*l*cos(T)/pi/4.;
+}
 
 ROOT_SIGNATURE
 void main(in VS_Input VSInput, out PS_Input PSInput){
 PSInput.wf=0.;
+#ifndef BYPASS_PIXEL_SHADER
+	PSInput.uv0 = VSInput.uv0;
+	PSInput.uv1 = VSInput.uv1;
+	PSInput.color = VSInput.color;
+#endif
 #ifdef AS_ENTITY_RENDERER
 	#ifdef INSTANCEDSTEREO
 		int i = VSInput.instanceID;
@@ -54,6 +65,10 @@ PSInput.wf=0.;
 		float3 worldPos = PSInput.position;
 #else
 		float3 worldPos = (VSInput.position.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
+		#ifndef SEASONS
+			if(.05<VSInput.color.a&&VSInput.color.a<.95)
+				worldPos.y+=gwav((VSInput.position.x+VSInput.position.z)-TOTAL_REAL_WORLD_TIME*2.,mix(.2,1.,VSInput.uv1.y),4.)*frac(VSInput.position.y)*.2;
+		#endif
 		// Transform to view space before projection instead of all at once to avoid floating point errors
 		// Not required for entities because they are already offset by camera translation before rendering
 		// World position here is calculated above and can get huge
@@ -68,11 +83,6 @@ PSInput.wf=0.;
 #endif
 PSInput.cPos=VSInput.position;
 PSInput.wPos=worldPos;
-#ifndef BYPASS_PIXEL_SHADER
-	PSInput.uv0 = VSInput.uv0;
-	PSInput.uv1 = VSInput.uv1;
-	PSInput.color = VSInput.color;
-#endif
 
 #ifdef GEOMETRY_INSTANCEDSTEREO
 	PSInput.instanceID = VSInput.instanceID;
