@@ -75,8 +75,8 @@ POS4 worldPos;
 			#ifdef FANCY
 				worldPos.y+=gwav(POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.,mix(.2,1.,uv1.y),4.)*fract(POSITION.y)*.2;
 			#else
-				float wwav =sin((POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
-				worldPos.y+=(wwav*wwav-.5)*fract(POSITION.y)*.07;
+				{float wwav = sin((POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
+				worldPos.y+=(wwav*wwav-.5)*fract(POSITION.y)*.07;}
 			#endif
 	#endif
 	// Transform to view space before projection instead of all at once to avoid floating point errors
