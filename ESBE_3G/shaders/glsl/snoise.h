@@ -1,10 +1,10 @@
 #ifndef SNOISE_H
 #define SNOISE_H
+//https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl
 
 highp vec3 mod289(highp vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 highp vec2 mod289(highp vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 highp vec3 permute(highp vec3 x) { return mod289(x*(x * 34.0 + 1.0)); }
-
 highp float snoise(highp vec2 v) {
 	const highp vec4 C = vec4(
 		0.211324865405187,   // (3.0-sqrt(3.0))/6.0

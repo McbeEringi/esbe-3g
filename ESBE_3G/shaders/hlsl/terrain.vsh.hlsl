@@ -70,7 +70,7 @@ PSInput.wf=0.;
 		#ifndef SEASONS
 			if(.05<VSInput.color.a&&VSInput.color.a<.95)
 				#ifdef FANCY
-					worldPos.y+=gwav(VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.,mix(.2,1.,VSInput.uv1.y),4.)*frac(VSInput.position.y)*.2;
+					worldPos.y+=gwav(VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.,lerp(.2,1.,VSInput.uv1.y),4.)*frac(VSInput.position.y)*.2;
 				#else
 					{float wwav = sin((VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
 					worldPos.y+=(wwav*wwav-.5)*frac(VSInput.position.y)*.07;}

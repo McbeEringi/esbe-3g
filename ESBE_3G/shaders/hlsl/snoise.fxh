@@ -1,10 +1,10 @@
 #ifndef SNOISE_H
 #define SNOISE_H
+//https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl
 
 float3 mod289(float3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 float2 mod289(float2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 float3 permute(float3 x) { return mod289(x*(x * 34.0 + 1.0)); }
-
 float snoise(float2 v) {
 	static const float4 C = float4(
 		0.211324865405187,   // (3.0-sqrt(3.0))/6.0
