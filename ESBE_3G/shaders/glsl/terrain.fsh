@@ -148,7 +148,9 @@ if(wf>.5){
 	vec2 skp = (wPos.xz*.4-(fract(grid*.625+.001)-.5)*nwpos.xz/nwpos.y*.2)/abs(wPos.y);
 	diffuse = mix(diffuse,FOG_COLOR,.02+.98*omnwposy*omnwposy*omnwposy*omnwposy*omnwposy);//fresnel
 	diffuse.rgb = mix(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omnwposy);
-	diffuse.rgb = mix(diffuse.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(nwpos.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*nwpos.y);
+	#ifdef FANCY
+		diffuse.rgb = mix(diffuse.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(nwpos.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*nwpos.y);
+	#endif
 	diffuse = mix(diffuse,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));//sun
 }
 

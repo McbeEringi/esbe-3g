@@ -113,7 +113,7 @@ float cameraDepth = length(-worldPos);
 
 ///// blended layer (mostly water) magic
 #ifndef SEASONS
-	if(.05<VSInput.color.a && VSInput.color.a<.95) {
+	if(.05<VSInput.color.a && VSInput.color.a<.95){
 		PSInput.wf=1.;
 		PSInput.color.a = lerp(VSInput.color.a,1.,saturate(cameraDepth/FAR_CHUNKS_DISTANCE));
 	}

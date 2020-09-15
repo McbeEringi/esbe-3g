@@ -104,7 +104,7 @@ float cameraDepth = length(-worldPos.xyz);
 
 ///// blended layer (mostly water) magic
 #ifndef SEASONS
-	if(.05<color.a&&color.a<.95) {
+	if(.05<color.a&&color.a<.95){
 		wf=1.;
 		color.a = mix(color.a,1.,clamp(cameraDepth/FAR_CHUNKS_DISTANCE,0.,1.));
 	}
