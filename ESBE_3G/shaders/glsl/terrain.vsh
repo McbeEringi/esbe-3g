@@ -70,10 +70,11 @@ POS4 worldPos;
 #else
 	worldPos.xyz = (POSITION.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
 	worldPos.w = 1.0;
+	//water
 	#ifndef SEASONS
 		if(.05<color.a&&color.a<.95)
 			#ifdef FANCY
-				worldPos.y+=gwav(POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.,mix(.2,1.,uv1.y),4.)*fract(POSITION.y)*.2;
+				worldPos.y+=gwav(POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.,mix(.3,1.,uv1.y),4.)*fract(POSITION.y)*.2;
 			#else
 				{float wwav = sin((POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
 				worldPos.y+=(wwav*wwav-.5)*fract(POSITION.y)*.07;}
@@ -89,6 +90,7 @@ gl_Position = pos;
 cPos = POSITION.xyz;
 wPos = worldPos.xyz;
 float wav = sin((POSITION.x+POSITION.z+(POSITION.y-TOTAL_REAL_WORLD_TIME)*2.)*1.57);
+//leaf
 #ifdef ALPHA_TEST
 	vec3 frp = fract(POSITION.xyz);
 	if((color.r!=color.g&&color.g!=color.b && frp.y!=.015625)||(frp.y==.9375&&(frp.x==0.||frp.z==0.)))
