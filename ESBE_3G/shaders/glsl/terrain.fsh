@@ -151,7 +151,7 @@ if(wf>.5){
 	#ifdef FANCY
 		diffuse.rgb = mix(diffuse.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(nwpos.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*nwpos.y*sun.y);
 	#endif
-	diffuse = mix(diffuse,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));//sun
+	//diffuse = mix(diffuse,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));//sun
 }
 
 //=*=*=  ESBE_3G end  =*=*=//
