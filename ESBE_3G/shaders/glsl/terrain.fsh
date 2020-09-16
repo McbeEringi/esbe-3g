@@ -146,10 +146,10 @@ if(wf>.5){
 	highp vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
 	vec3 nwpos = normalize(abs(wPos));float omnwposy = 1.-nwpos.y;
 	vec2 skp = (wPos.xz*.4-(fract(grid*.625+.001)-.5)*nwpos.xz/nwpos.y*.2)/abs(wPos.y);
-	diffuse = mix(diffuse,FOG_COLOR,.02+.98*omnwposy*omnwposy*omnwposy*omnwposy*omnwposy);//fresnel
+	diffuse = mix(diffuse,mix(tex1,FOG_COLOR,sun.y),.02+.98*omnwposy*omnwposy*omnwposy*omnwposy*omnwposy);//fresnel
 	diffuse.rgb = mix(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omnwposy);
 	#ifdef FANCY
-		diffuse.rgb = mix(diffuse.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(nwpos.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*nwpos.y);
+		diffuse.rgb = mix(diffuse.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(nwpos.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*nwpos.y*sun.y);
 	#endif
 	diffuse = mix(diffuse,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));//sun
 }
