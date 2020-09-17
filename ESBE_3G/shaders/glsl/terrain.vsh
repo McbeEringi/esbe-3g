@@ -94,7 +94,7 @@ float wav = sin((POSITION.x+POSITION.z+(POSITION.y-TOTAL_REAL_WORLD_TIME)*2.)*1.
 #ifdef ALPHA_TEST
 	vec3 frp = fract(POSITION.xyz);
 	if((color.r!=color.g&&color.g!=color.b && frp.y!=.015625)||(frp.y==.9375&&(frp.x==0.||frp.z==0.)))
-		gl_Position.x += wav*.02;
+		gl_Position.x += wav*mix(.01,.02,uv1.y);
 #endif
 
 ///// find distance from the camera
