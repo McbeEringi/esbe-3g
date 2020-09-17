@@ -1,3 +1,5 @@
+ver: mf{name,ver*2} start{desc,button}
+
 0.1
 トーンマップの追加
 影の追加
