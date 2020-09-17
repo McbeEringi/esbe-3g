@@ -123,7 +123,7 @@ diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
 if(PSInput.wf>.5){
 	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*float2(3.14,1.57)+time*4.)*.1;
 	float3 nwpos = normalize(abs(PSInput.wPos));float omnwposy = 1.-nwpos.y;
-	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625+.001)-.5)*nwpos.xz/nwpos.y*.2)/abs(PSInput.wPos.y);
+	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625)-.5)*nwpos.xz/nwpos.y*.2)/abs(PSInput.wPos.y);
 	diffuse = lerp(diffuse,lerp(tex1,FOG_COLOR,sun.y),.02+.98*omnwposy*omnwposy*omnwposy*omnwposy*omnwposy);//fresnel
 	diffuse.rgb = lerp(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omnwposy);
 	#ifdef FANCY
