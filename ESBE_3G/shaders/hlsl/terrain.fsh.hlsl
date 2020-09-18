@@ -120,12 +120,23 @@ if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smo
 diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
 
 //water
+#define USE_NORMAL
 if(PSInput.wf>.5){
+	#ifdef USE_NORMAL
+		float3 N = normalize(cross(ddx(-PSInput.cPos),ddy(PSInput.cPos)));
+	#endif
 	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*float2(3.14,1.57)+time*4.)*.1;
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
-	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625)-.5)*T.xz*omsin*omsin)/abs(PSInput.wPos.y);
-	diffuse = lerp(diffuse,lerp(tex1,FOG_COLOR,sun.y),.02+.98*omsin*omsin*omsin*omsin*omsin);//fresnel
+	diffuse = lerp(diffuse,lerp(tex1,FOG_COLOR,sun.y),.02+.98*
+			#ifdef USE_NORMAL
+				pow(1.-dot(normalize(-wPos),N),5.)
+			#else
+				omsin*omsin*omsin*omsin*omsin
+			#endif
+			);//fresnel
+	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625)-.5)*T.xz*omsin*omsin);
 	diffuse.rgb = lerp(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);
+	skp/=abs(PSInput.wPos.y);
 	#ifdef FANCY
 		diffuse.rgb = lerp(diffuse.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp-float2(time*.02,0.)))*T.y*sun.y);
 	#endif

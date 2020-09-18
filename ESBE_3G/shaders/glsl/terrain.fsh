@@ -17,6 +17,9 @@
 			_centroid in vec2 uv1;
 		#endif
 	#endif
+	#ifdef FANCY
+		#define USE_NORMAL
+	#endif
 #else
 	#ifndef BYPASS_PIXEL_SHADER
 		varying vec2 uv0;
@@ -143,11 +146,21 @@ diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
 
 //water
 if(wf>.5){
+	#ifdef USE_NORMAL
+		HM vec3 N = normalize(cross(dFdx(cPos),dFdy(cPos)));
+	#endif
 	HM vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
 	vec3 T = normalize(abs(wPos));float omsin = 1.-T.y;
-	vec2 skp = (wPos.xz*.4-(fract(grid*.625)-.5)*T.xz*omsin*omsin)/abs(wPos.y);
-	diffuse = mix(diffuse,mix(tex1,FOG_COLOR,sun.y),.02+.98*omsin*omsin*omsin*omsin*omsin);//fresnel
+	diffuse = mix(diffuse,mix(tex1,FOG_COLOR,sun.y),.02+.98*
+			#ifdef USE_NORMAL
+				pow(1.-dot(normalize(-wPos),N),5.)
+			#else
+				omsin*omsin*omsin*omsin*omsin
+			#endif
+			);//fresnel
+	vec2 skp = (wPos.xz*.4-(fract(grid*.625)-.5)*T.xz*omsin*omsin);
 	diffuse.rgb = mix(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);
+	skp/=abs(wPos.y);
 	#ifdef FANCY
 		diffuse.rgb = mix(diffuse.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*T.y*sun.y);
 	#endif
