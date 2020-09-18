@@ -73,13 +73,14 @@ POS4 worldPos;
 	worldPos.w = 1.0;
 	//water
 	#ifndef SEASONS
-		if(.05<color.a&&color.a<.95)
+		if(.05<color.a&&color.a<.95){
 			#ifdef FANCY
 				worldPos.y+=gwav(POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.,mix(.3,1.,uv1.y),4.)*fract(POSITION.y)*saturate(1.-length(worldPos.xyz)/FAR_CHUNKS_DISTANCE)*.2;
 			#else
-				{float wwav = sin((POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
-				worldPos.y+=(wwav*wwav-.5)*fract(POSITION.y)*saturate(1.-length(worldPos.xyz)/FAR_CHUNKS_DISTANCE)*mix(.02,.07,uv1.y);}
+				float wwav = sin((POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
+				worldPos.y+=(wwav*wwav-.5)*fract(POSITION.y)*saturate(1.-length(worldPos.xyz)/FAR_CHUNKS_DISTANCE)*mix(.02,.07,uv1.y);
 			#endif
+		}
 	#endif
 	// Transform to view space before projection instead of all at once to avoid floating point errors
 	// Not required for entities because they are already offset by camera translation before rendering

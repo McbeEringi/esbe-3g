@@ -69,13 +69,14 @@ PSInput.wf=0.;
 		float3 worldPos = (VSInput.position.xyz * CHUNK_ORIGIN_AND_SCALE.w) + CHUNK_ORIGIN_AND_SCALE.xyz;
 		//water
 		#ifndef SEASONS
-			if(.05<VSInput.color.a&&VSInput.color.a<.95)
+			if(.05<VSInput.color.a&&VSInput.color.a<.95){
 				#ifdef FANCY
 					worldPos.y+=gwav(VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.,lerp(.3,1.,VSInput.uv1.y),4.)*frac(VSInput.position.y)*saturate(1.-length(worldPos)/FAR_CHUNKS_DISTANCE)*.2;
 				#else
-					{float wwav = sin((VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
-					worldPos.y+=(wwav*wwav-.5)*frac(VSInput.position.y)*saturate(1.-length(worldPos)/FAR_CHUNKS_DISTANCE)*lerp(.02,.07,VSInput.uv1.y);}
+					float wwav = sin((VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
+					worldPos.y+=(wwav*wwav-.5)*frac(VSInput.position.y)*saturate(1.-length(worldPos)/FAR_CHUNKS_DISTANCE)*lerp(.02,.07,VSInput.uv1.y);
 				#endif
+			}
 		#endif
 		// Transform to view space before projection instead of all at once to avoid floating point errors
 		// Not required for entities because they are already offset by camera translation before rendering

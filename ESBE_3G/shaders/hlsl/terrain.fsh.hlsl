@@ -129,7 +129,7 @@ if(PSInput.wf>.5){
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
 	diffuse = lerp(diffuse,lerp(tex1,FOG_COLOR,sun.y),.02+.98*
 			#ifdef USE_NORMAL
-				pow(1.-dot(normalize(-wPos),N),5.)
+				pow(1.-dot(normalize(-PSInput.wPos),N),5.)
 			#else
 				omsin*omsin*omsin*omsin*omsin
 			#endif
