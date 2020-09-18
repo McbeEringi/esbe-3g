@@ -46,6 +46,7 @@ const float rB = 1.0;
 const vec3 UNIT_Y = vec3(0,1,0);
 const float DIST_DESATURATION = 56.0 / 255.0; //WARNING this value is also hardcoded in the water color, don'tchange
 
+#define saturate(x) clamp(x,0.,1.)
 #ifdef FANCY
 highp float gwav(highp float x,highp float r,highp float l){//http://marupeke296.com/Shader_No5_PeakWave.html
 	const highp float pi=3.1415926535;
@@ -74,10 +75,10 @@ POS4 worldPos;
 	#ifndef SEASONS
 		if(.05<color.a&&color.a<.95)
 			#ifdef FANCY
-				worldPos.y+=gwav(POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.,mix(.3,1.,uv1.y),4.)*fract(POSITION.y)*.2;
+				worldPos.y+=gwav(POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.,mix(.3,1.,uv1.y),4.)*fract(POSITION.y)*saturate(1.-length(worldPos.xyz)/FAR_CHUNKS_DISTANCE)*.2;
 			#else
 				{float wwav = sin((POSITION.x+POSITION.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
-				worldPos.y+=(wwav*wwav-.5)*fract(POSITION.y)*.07;}
+				worldPos.y+=(wwav*wwav-.5)*fract(POSITION.y)*saturate(1.-length(worldPos.xyz)/FAR_CHUNKS_DISTANCE)*mix(.02,.07,uv1.y);}
 			#endif
 	#endif
 	// Transform to view space before projection instead of all at once to avoid floating point errors
