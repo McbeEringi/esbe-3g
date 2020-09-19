@@ -109,7 +109,7 @@ float cameraDepth = length(-worldPos.xyz);
 		len += RENDER_CHUNK_FOG_ALPHA;
 	#endif
 	fogColor.rgb = FOG_COLOR.rgb;
-	fogColor.a = clamp((len - FOG_CONTROL.x) / (FOG_CONTROL.y - FOG_CONTROL.x), 0.0, 1.0);
+	fogColor.a = saturate((len - FOG_CONTROL.x) / (FOG_CONTROL.y - FOG_CONTROL.x));
 #endif
 
 ///// blended layer (mostly water) magic
