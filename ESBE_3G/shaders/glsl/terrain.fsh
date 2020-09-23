@@ -165,7 +165,7 @@ if(wf>.5){
 		water.rgb = mix(water.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*T.y*sun.y);
 	#endif
 	//water = mix(water,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));//sun
-	diffuse = mix(diffuse,water,length(T.xz)*.8+.2);
+	diffuse = mix(diffuse,water,length(T.xz)*.5+.5);
 }
 
 //=*=*=  ESBE_3G end  =*=*=//
