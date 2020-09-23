@@ -1,6 +1,6 @@
 {
 	"biomes":{
-		"default":{"water_surface_color":"#44AFF5","water_surface_transparency":.65,"water_fog_color":"#44AFF5","water_fog_distance":64,"fog_color":"#ABD2FF"},
+		"default":{"water_surface_color":"#44AFF5","water_surface_transparency":0.65,"water_fog_color":"#44AFF5","water_fog_distance":64,"fog_color":"#ABD2FF"},
 		"plains":{"water_surface_color":"#44AFF5","water_fog_color":"#44AFF5"},
 		"sunflower_plains":{"water_surface_color":"#44AFF5","water_fog_color":"#44AFF5"},
 		"desert":{"water_surface_color":"#32A598","water_fog_color":"#32A598"},
@@ -9,8 +9,8 @@
 		"flower_forest":{"water_surface_color":"#20A3CC","water_fog_color":"#20A3CC"},
 		"taiga":{"water_surface_color":"#287082","water_fog_color":"#287082"},
 		"taiga_mutated":{"water_surface_color":"#1E6B82","water_fog_color":"#1E6B82"},
-		"swampland":{"water_surface_color":"#4c6559","water_surface_transparency":.9,"water_fog_color":"#4c6559","water_fog_distance":32},
-		"swampland_mutated":{"water_surface_color":"#4c6156","water_surface_transparency":.9,"water_fog_color":"#4c6156","water_fog_distance":32},
+		"swampland":{"water_surface_color":"#4c6559","water_surface_transparency":0.8,"water_fog_color":"#4c6559","water_fog_distance":32},
+		"swampland_mutated":{"water_surface_color":"#4c6156","water_surface_transparency":0.8,"water_fog_color":"#4c6156","water_fog_distance":32},
 		"river":{"water_surface_color":"#0084FF","water_fog_color":"#0084FF","water_fog_distance":64},
 		"hell":{"water_surface_color":"#905957","water_fog_color":"#905957","fog_color":"#330808"},
 		"the_end":{"water_surface_color":"#62529e","water_fog_color":"#62529e","fog_color":"#0B080C"},
@@ -57,7 +57,7 @@
 		"mesa_plateau":{"water_surface_color":"#55809E","water_fog_color":"#55809E"},
 		"ocean":{"water_surface_color":"#1787D4","water_fog_color":"#1165b0","water_fog_distance":96},
 		"deep_ocean":{"water_surface_color":"#1787D4","water_fog_color":"#1463a5","water_fog_distance":96},
-		"warm_ocean":{"water_surface_color":"#02B0E5","water_surface_transparency":.55,"water_fog_color":"#0289d5","water_fog_distance":96},
+		"warm_ocean":{"water_surface_color":"#02B0E5","water_surface_transparency":0.55,"water_fog_color":"#0289d5","water_fog_distance":96},
 		"deep_warm_ocean":{"water_surface_color":"#02B0E5","water_fog_color":"#0686ca","water_fog_distance":96},
 		"lukewarm_ocean":{"water_surface_color":"#0D96DB","water_fog_color":"#0a74c4","water_fog_distance":96},
 		"deep_lukewarm_ocean":{"water_surface_color":"#0D96DB","water_fog_color":"#0e72b9","water_fog_distance":96},
