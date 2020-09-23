@@ -127,7 +127,7 @@ if(PSInput.wf>.5){
 	#endif
 	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*float2(3.14,1.57)+time*4.)*.1;
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
-	diffuse = lerp(diffuse,lerp(tex1,FOG_COLOR,sun.y),.02+.98*
+	float4 water = lerp(diffuse,lerp(tex1,FOG_COLOR,sun.y),.02+.98*
 			#ifdef USE_NORMAL
 				pow(1.-dot(normalize(-PSInput.wPos),N),5.)
 			#else
@@ -135,12 +135,13 @@ if(PSInput.wf>.5){
 			#endif
 			);//fresnel
 	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625)-.5)*T.xz*omsin*omsin);
-	diffuse.rgb = lerp(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);
+	water.rgb = lerp(water.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);
 	skp/=abs(PSInput.wPos.y);
 	#ifdef FANCY
-		diffuse.rgb = lerp(diffuse.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp-float2(time*.02,0.)))*T.y*sun.y);
+		water.rgb = lerp(water.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp-float2(time*.02,0.)))*T.y*sun.y);
 	#endif
-	//diffuse = lerp(diffuse,1.,smoothstep(.8,.3,distance(float2(-2,0),skp)));//sun
+	//water = lerp(water,1.,smoothstep(.8,.3,distance(float2(-2,0),skp)));//sun
+	diffuse = lerp(diffuse,water,length(T.xz)*.8+.2);
 }
 
 //=*=*=  ESBE_3G end  =*=*=//

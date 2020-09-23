@@ -151,7 +151,7 @@ if(wf>.5){
 	#endif
 	HM vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
 	vec3 T = normalize(abs(wPos));float omsin = 1.-T.y;
-	diffuse = mix(diffuse,mix(tex1,FOG_COLOR,sun.y),.02+.98*
+	vec4 water = mix(diffuse,mix(tex1,FOG_COLOR,sun.y),.02+.98*
 			#ifdef USE_NORMAL
 				pow(1.-dot(normalize(-wPos),N),5.)
 			#else
@@ -159,12 +159,13 @@ if(wf>.5){
 			#endif
 			);//fresnel
 	vec2 skp = (wPos.xz*.4-(fract(grid*.625)-.5)*T.xz*omsin*omsin);
-	diffuse.rgb = mix(diffuse.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);
+	water.rgb = mix(water.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);
 	skp/=abs(wPos.y);
 	#ifdef FANCY
-		diffuse.rgb = mix(diffuse.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*T.y*sun.y);
+		water.rgb = mix(water.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp-vec2(time*.02,0)))*T.y*sun.y);
 	#endif
-	//diffuse = mix(diffuse,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));//sun
+	//water = mix(water,vec4(1),smoothstep(.8,.3,distance(vec2(-2,0),skp)));//sun
+	diffuse = mix(diffuse,water,length(T.xz)*.8+.2);
 }
 
 //=*=*=  ESBE_3G end  =*=*=//
