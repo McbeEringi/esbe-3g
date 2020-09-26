@@ -136,10 +136,10 @@ if(PSInput.wf>.5){
 			);//fresnel
 	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625)-.5)*T.xz*omsin*omsin);
 	water.rgb = lerp(water.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);
-	skp/=abs(PSInput.wPos.y);
 	#ifdef FANCY
-		water.rgb = lerp(water.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp-float2(time*.02,0.)))*T.y*sun.y);
+		water.rgb = lerp(water.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp/abs(PSInput.wPos.y)-float2(time*.02,0.)))*T.y*sun.y);
 	#endif
+	float3 nskp=normalize(float3(abs(skp.x),PSInput.wPos.y,skp.y));
 	//water = lerp(water,1.,smoothstep(.8,.3,distance(float2(-2,0),skp)));//sun
 	diffuse = lerp(diffuse,water,length(T.xz)*.5+.5);
 }
