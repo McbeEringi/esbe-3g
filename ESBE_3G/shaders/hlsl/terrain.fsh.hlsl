@@ -139,8 +139,8 @@ if(PSInput.wf>.5){
 	#ifdef FANCY
 		water.rgb = lerp(water.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp/abs(PSInput.wPos.y)-float2(time*.02,0.)))*T.y*sun.y);
 	#endif
-	float3 nskp=normalize(float3(abs(skp.x),PSInput.wPos.y,skp.y));
-	//water = lerp(water,1.,smoothstep(.8,.3,distance(float2(-2,0),skp)));//sun
+	float3 Ts = normalize(float3(abs(skp.x),PSInput.wPos.y,skp.y));
+	water = lerp(water,1.,smoothstep(.97,1.,dot(float2(cos(.5),-sin(.5)),Ts.xy)));//sun
 	diffuse = lerp(diffuse,water,length(T.xz)*.5+.5);
 }
 
