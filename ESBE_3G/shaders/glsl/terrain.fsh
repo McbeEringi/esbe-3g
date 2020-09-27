@@ -165,7 +165,7 @@ if(wf>.5){
 	#endif
 	vec3 Ts = normalize(vec3(abs(skp.x),wPos.y,skp.y));
 	float sunT = mix(-.1,.4,saturate(daylight.y*1.5-.5));
-	water = mix(water,vec4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(vec2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.4,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
+	water = mix(water,vec4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(vec2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = mix(diffuse,water,length(T.xz)*.5+.5);
 }
 
