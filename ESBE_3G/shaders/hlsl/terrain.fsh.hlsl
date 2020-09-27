@@ -140,7 +140,7 @@ if(PSInput.wf>.5){
 		water.rgb = lerp(water.rgb,lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp/abs(PSInput.wPos.y)-float2(time*.02,0.)))*T.y*sun.y);
 	#endif
 	float3 Ts = normalize(float3(abs(skp.x),PSInput.wPos.y,skp.y));
-	float sunT = lerp(-.1,.4,saturate(daylight.y*2.-1.));
+	float sunT = lerp(-.1,.4,saturate(daylight.y*1.5-.5));
 	water = lerp(water,float4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(float2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.4,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = lerp(diffuse,water,length(T.xz)*.5+.5);
 }
