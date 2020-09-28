@@ -120,7 +120,7 @@ float br = texture2D(TEXTURE_1,vec2(.5,0.)).r;
 vec2 daylight = texture2D(TEXTURE_1,vec2(0.,1.)).rr;daylight=smoothstep(br-.2,br+.2,daylight);daylight.x*=weather;
 float nv = step(texture2D(TEXTURE_1,vec2(0)).r,.5);
 float dusk = min(smoothstep(.3,.5,daylight.y),smoothstep(1.,.8,daylight.y));
-float uw = step(FOG_COLOR.a,0.);
+bool uw = FOG_COLOR.a<.001;
 vec4 ambient = mix(//vec4(gamma.rgb,saturation)
 		vec4(1.,.97,.9,1.15),//indoor
 	mix(
@@ -131,7 +131,7 @@ vec4 ambient = mix(//vec4(gamma.rgb,saturation)
 	daylight.y),
 		vec4(1.4,1.,.7,.8),//dusk
 	dusk),weather),sun.y*nv);
-	if(bool(uw))ambient = vec4(FOG_COLOR.rgb*.6+.4,.8);
+	if(uw)ambient = vec4(FOG_COLOR.rgb*.6+.4,.8);
 #ifdef USE_NORMAL
 	HM vec3 N = normalize(cross(dFdx(cPos),dFdy(cPos)));
 #endif
@@ -169,7 +169,7 @@ if(wf>.5){
 	water = mix(water,vec4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(vec2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = mix(diffuse,water,length(T.xz)*.5+.5);
 #ifndef ALPHA_TEST
-}else if(!bool(uw))diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow(1.-dot(normalize(-wPos),N),5.)*sun.y*(snoise(cPos.xz)*.2+.8));
+}else if(!uw)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow(1.-dot(normalize(-wPos),N),5.)*sun.y*(snoise(cPos.xz)*.2+.8));
 #else
 }
 #endif
