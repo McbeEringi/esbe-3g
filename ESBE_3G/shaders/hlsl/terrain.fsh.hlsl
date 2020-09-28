@@ -95,6 +95,7 @@ float br = TEXTURE_1.Sample(TextureSampler1,float2(.5,0.)).r;
 float2 daylight = TEXTURE_1.Sample(TextureSampler1,float2(0.,1.)).rr;daylight=smoothstep(br-.2,br+.2,daylight);daylight.x*=weather;
 float nv = step(TEXTURE_1.Sample(TextureSampler1,float2(0,0)).r,.5);
 float dusk = min(smoothstep(.3,.5,daylight.y),smoothstep(1.,.8,daylight.y));
+bool uw = FOG_COLOR.a<.001;
 float4 ambient = lerp(//float4(gamma.rgb,saturation)
 		float4(1.,.97,.9,1.15),//indoor
 	lerp(
@@ -105,7 +106,7 @@ float4 ambient = lerp(//float4(gamma.rgb,saturation)
 	daylight.y),
 		float4(1.4,1.,.7,.8),//dusk
 	dusk),weather),sun.y*nv);
-	if(FOG_COLOR.a<.001)ambient = float4(FOG_COLOR.rgb*.6+.4,.8);
+	if(uw)ambient = float4(FOG_COLOR.rgb*.6+.4,.8);
 
 //tonemap
 diffuse.rgb = tone(diffuse.rgb,ambient);
