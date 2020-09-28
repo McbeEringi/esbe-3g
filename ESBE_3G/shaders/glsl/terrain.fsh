@@ -153,7 +153,7 @@ diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
 if(wf>.5){
 	HM vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
 	vec3 T = normalize(abs(wPos));float omsin = 1.-T.y;
-	vec4 water = mix(diffuse,mix(tex1,FOG_COLOR,sun.y),.02+.98*
+	vec4 water = mix(diffuse,vec4(mix(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*
 			#ifdef USE_NORMAL
 				pow5(1.-dot(normalize(-wPos),N))
 			#else
@@ -170,7 +170,7 @@ if(wf>.5){
 	water = mix(water,vec4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(vec2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = mix(diffuse,water,length(T.xz)*.5+.5);
 #if !defined(ALPHA_TEST) && defined(USE_NORMAL)
-}else if(!uw)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(-wPos),N))*sun.y*(daylight.y*.6+.4)*(snoise(cPos.xz)*.2+.8));
+}else if(!uw)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(-wPos),N))*sun.y*(tex1.g*.6+.4)*(snoise(cPos.xz)*.2+.8));
 #else
 }
 #endif

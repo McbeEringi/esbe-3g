@@ -129,7 +129,7 @@ if(PSInput.wf>.5){
 	#endif
 	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*float2(3.14,1.57)+time*4.)*.1;
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
-	float4 water = lerp(diffuse,lerp(tex1,FOG_COLOR,sun.y),.02+.98*
+	float4 water = lerp(diffuse,float4(lerp(tex1.rgb,FOG_COLOR.rgb,sun.y),1.),.02+.98*
 			#ifdef USE_NORMAL
 				pow5(1.-dot(normalize(-PSInput.wPos),N))
 			#else
@@ -146,7 +146,7 @@ if(PSInput.wf>.5){
 	water = lerp(water,float4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(float2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = lerp(diffuse,water,length(T.xz)*.5+.5);
 #if !defined(ALPHA_TEST) && defined(USE_NORMAL)
-}else if(!uw)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(PSInput.-wPos),N))*sun.y*(daylight.y*.6+.4)*(snoise(PSInput.cPos.xz)*.2+.8));
+}else if(!uw)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(PSInput.-wPos),N))*sun.y*(tex1.g*.6+.4)*(snoise(PSInput.cPos.xz)*.2+.8));
 #else
 }
 #endif
