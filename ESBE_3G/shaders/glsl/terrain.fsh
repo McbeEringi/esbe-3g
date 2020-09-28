@@ -59,6 +59,7 @@ float sat(vec3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
 	float v=max(max(col.r,col.g),col.b);
 	return v>0.?(v-min(min(col.r,col.g),col.b))/v:0.;
 }
+float pow5(float x){return x*x*x*x*x;}
 
 void main(){
 #ifdef BYPASS_PIXEL_SHADER
@@ -154,7 +155,7 @@ if(wf>.5){
 	vec3 T = normalize(abs(wPos));float omsin = 1.-T.y;
 	vec4 water = mix(diffuse,mix(tex1,FOG_COLOR,sun.y),.02+.98*
 			#ifdef USE_NORMAL
-				pow(1.-dot(normalize(-wPos),N),5.)
+				pow5(1.-dot(normalize(-wPos),N))
 			#else
 				omsin*omsin*omsin*omsin*omsin
 			#endif
@@ -169,7 +170,7 @@ if(wf>.5){
 	water = mix(water,vec4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(vec2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = mix(diffuse,water,length(T.xz)*.5+.5);
 #ifndef ALPHA_TEST
-}else if(!uw)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow(1.-dot(normalize(-wPos),N),5.)*sun.y*(daylight.y*.6+.4)*(snoise(cPos.xz)*.2+.8));
+}else if(!uw)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(-wPos),N))*sun.y*(daylight.y*.6+.4)*(snoise(cPos.xz)*.2+.8));
 #else
 }
 #endif
