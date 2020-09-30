@@ -161,10 +161,10 @@ if(wf>.5){
 			#endif
 			);//fresnel
 	vec2 skp = (wPos.xz*.4-(fract(grid*.625)-.5)*T.xz*omsin*omsin);
-	water.rgb = mix(water.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);
 	#ifdef FANCY
-		water.rgb = mix(water.rgb,mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),smoothstep(-.5,1.,snoise(skp/abs(wPos.y)-vec2(time*.02,0)))*T.y*sun.y);
+		water = mix(water,vec4(mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),1),smoothstep(-.5,1.,snoise(skp/abs(wPos.y)-vec2(time*.02,0)))*T.y*sun.y);//cloud
 	#endif
+	water.rgb = mix(water.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);//t_ref
 	vec3 Ts = normalize(vec3(abs(skp.x),wPos.y,skp.y));
 	float sunT = mix(-.1,.4,saturate(daylight.y*1.5-.5));
 	water = mix(water,vec4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(vec2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
