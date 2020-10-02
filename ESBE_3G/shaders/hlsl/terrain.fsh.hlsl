@@ -1,6 +1,7 @@
 #include "ShaderConstants.fxh"
 #include "util.fxh"
 #include "snoise.fxh"
+#define USE_NORMAL
 
 struct PS_Input{
 	float4 position : SV_Position;
@@ -108,6 +109,9 @@ float4 ambient = lerp(//float4(gamma.rgb,saturation)
 		float4(1.4,1.,.7,.8),//dusk
 	dusk),weather),sun.y*nv);
 	if(uw)ambient = float4(FOG_COLOR.rgb*.6+.4,.8);
+#ifdef USE_NORMAL
+	float3 N = normalize(cross(ddx(-PSInput.cPos),ddy(PSInput.cPos)));
+#endif
 
 //tonemap
 diffuse.rgb = tone(diffuse.rgb,ambient);
@@ -122,14 +126,10 @@ if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smo
 diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
 
 //water
-#define USE_NORMAL
 if(PSInput.wf>.5){
-	#ifdef USE_NORMAL
-		float3 N = normalize(cross(ddx(-PSInput.cPos),ddy(PSInput.cPos)));
-	#endif
 	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*float2(3.14,1.57)+time*4.)*.1;
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
-	float4 water = lerp(diffuse,float4(lerp(tex1.rgb,FOG_COLOR.rgb,sun.y),1.),.02+.98*
+	float4 water = lerp(diffuse,float4(lerp(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*
 			#ifdef USE_NORMAL
 				pow5(1.-dot(normalize(-PSInput.wPos),N))
 			#else
@@ -138,7 +138,7 @@ if(PSInput.wf>.5){
 			);//fresnel
 	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625)-.5)*T.xz*omsin*omsin);
 	#ifdef FANCY
-		water = lerp(water.rgb,float4(lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),1),smoothstep(-.5,1.,snoise(skp/abs(PSInput.wPos.y)-float2(time*.02,0.)))*T.y*sun.y);//cloud
+		water = lerp(water,float4(lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),1),smoothstep(-.5,1.,snoise(skp/abs(PSInput.wPos.y)-float2(time*.02,0)))*T.y*sun.y);//cloud
 	#endif
 	water.rgb = lerp(water.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);//t_ref
 	float3 Ts = normalize(float3(abs(skp.x),PSInput.wPos.y,skp.y));
@@ -146,7 +146,7 @@ if(PSInput.wf>.5){
 	water = lerp(water,float4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(float2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = lerp(diffuse,water,length(T.xz)*.5+.5);
 #if !defined(ALPHA_TEST) && defined(USE_NORMAL)
-}else if(!uw)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(PSInput.-wPos),N))*sun.y*(tex1.g*.6+.4)*(snoise(PSInput.cPos.xz)*.2+.8));
+}else if(!uw)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(-PSInput.wPos),N))*sun.y*(tex1.g*.6+.4)*(snoise(PSInput.cPos.xz)*.2+.8));
 #else
 }
 #endif
