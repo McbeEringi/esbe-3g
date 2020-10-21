@@ -127,7 +127,8 @@ diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
 
 //water
 if(PSInput.wf>.5){
-	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5)); grid+=sin(grid.yx*float2(3.14,1.57)+time*4.)*.1;
+	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5));
+	float2 wav = sin(grid.yx*float2(3.14,1.57)+time*4.)*.1; grid+=wav;
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
 	float4 water = lerp(diffuse,float4(lerp(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*
 			#ifdef USE_NORMAL
@@ -138,7 +139,7 @@ if(PSInput.wf>.5){
 			);//fresnel
 	float2 skp = (PSInput.wPos.xz*.4-(frac(grid*.625)-.5)*T.xz*omsin*omsin);
 	#ifdef FANCY
-		water = lerp(water,float4(lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),1),smoothstep(-.5,1.,snoise(skp/abs(PSInput.wPos.y)-float2(time*.02,0)))*T.y*sun.y);//cloud
+		water = lerp(water,float4(lerp(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),1),smoothstep(-.5,1.,snoise(skp/abs(PSInput.wPos.y)-float2(time*.02,0)+wav*.07))*T.y*sun.y);//c_ref
 	#endif
 	water.rgb = lerp(water.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);//t_ref
 	float3 Ts = normalize(float3(abs(skp.x),PSInput.wPos.y,skp.y));

@@ -151,7 +151,8 @@ diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
 
 //water
 if(wf>.5){
-	HM vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5); grid+=sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1;
+	HM vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5);
+	vec2 wav = sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1; grid+=wav;
 	vec3 T = normalize(abs(wPos));float omsin = 1.-T.y;
 	vec4 water = mix(diffuse,vec4(mix(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*
 			#ifdef USE_NORMAL
@@ -162,7 +163,7 @@ if(wf>.5){
 			);//fresnel
 	vec2 skp = (wPos.xz*.4-(fract(grid*.625)-.5)*T.xz*omsin*omsin);
 	#ifdef FANCY
-		water = mix(water,vec4(mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),1),smoothstep(-.5,1.,snoise(skp/abs(wPos.y)-vec2(time*.02,0)))*T.y*sun.y);//cloud
+		water = mix(water,vec4(mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),1),smoothstep(-.5,1.,snoise(skp/abs(wPos.y)-vec2(time*.02,0)+wav*.07))*T.y*sun.y);//c_ref
 	#endif
 	water.rgb = mix(water.rgb,tex1.rgb,saturate(snoise(normalize(skp)*3.+time*.02)*.5+.5)*omsin);//t_ref
 	vec3 Ts = normalize(vec3(abs(skp.x),wPos.y,skp.y));
