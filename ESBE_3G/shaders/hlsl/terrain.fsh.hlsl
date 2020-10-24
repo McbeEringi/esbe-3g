@@ -7,7 +7,7 @@ struct PS_Input{
 	float4 position : SV_Position;
 	float3 cPos : chunkedPos;
 	float3 wPos : worldPos;
-	float wf : WaterFlag;
+	float block : BlockFlag;
 
 #ifndef BYPASS_PIXEL_SHADER
 	lpfloat4 color : COLOR;
@@ -111,6 +111,7 @@ float4 ambient = lerp(//float4(gamma.rgb,saturation)
 	if(uw)ambient = float4(FOG_COLOR.rgb*.6+.4,.8);
 #ifdef USE_NORMAL
 	float3 N = normalize(cross(ddx(-PSInput.cPos),ddy(PSInput.cPos)));
+	float dotN = dot(normalize(-PSInput.wPos),N);
 #endif
 
 //tonemap
@@ -126,13 +127,13 @@ if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smo
 diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
 
 //water
-if(PSInput.wf>.5){
+if(.5<PSInput.block){
 	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5));
 	float2 wav = sin(grid.yx*float2(3.14,1.57)+time*4.)*.1; grid+=wav;
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
 	float4 water = lerp(diffuse,float4(lerp(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*
 			#ifdef USE_NORMAL
-				pow5(1.-dot(normalize(-PSInput.wPos),N))
+				pow5(1.-dotN)
 			#else
 				omsin*omsin*omsin*omsin*omsin
 			#endif
@@ -147,7 +148,7 @@ if(PSInput.wf>.5){
 	water = lerp(water,float4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(float2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = lerp(diffuse,water,length(T.xz)*.5+.5);
 #if !defined(ALPHA_TEST) && defined(USE_NORMAL)
-}else if(!uw)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(-PSInput.wPos),N))*sun.y*(tex1.g*.6+.4)*(snoise(PSInput.cPos.xz)*.2+.8));
+}else if(!uw)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dotN)*sun.y*(tex1.g*.6+.4)*(snoise(PSInput.cPos.xz)*.2+.8));
 #else
 }
 #endif

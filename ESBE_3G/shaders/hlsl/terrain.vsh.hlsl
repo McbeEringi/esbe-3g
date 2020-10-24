@@ -15,7 +15,7 @@ struct PS_Input{
 	float4 position : SV_Position;
 	float3 cPos : chunkedPos;
 	float3 wPos : worldPos;
-	float wf : WaterFlag;
+	float block : BlockFlag;
 
 #ifndef BYPASS_PIXEL_SHADER
 	lpfloat4 color : COLOR;
@@ -51,7 +51,7 @@ float gwav(float x,float r,float l){//http://marupeke296.com/Shader_No5_PeakWave
 
 ROOT_SIGNATURE
 void main(in VS_Input VSInput, out PS_Input PSInput){
-PSInput.wf=0.;
+PSInput.block=0.;
 #ifndef BYPASS_PIXEL_SHADER
 	PSInput.uv0 = VSInput.uv0;
 	PSInput.uv1 = VSInput.uv1;
@@ -123,7 +123,7 @@ float cameraDepth = length(-worldPos);
 ///// blended layer (mostly water) magic
 #ifndef SEASONS
 	if(.05<VSInput.color.a && VSInput.color.a<.95){
-		PSInput.wf=1.;
+		PSInput.block=1.;
 		PSInput.color.a = lerp(VSInput.color.a,1.,saturate(cameraDepth/FAR_CHUNKS_DISTANCE));
 	}
 #endif

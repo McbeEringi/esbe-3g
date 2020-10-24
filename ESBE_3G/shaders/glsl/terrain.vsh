@@ -28,7 +28,7 @@
 #endif
 varying HM vec3 cPos;
 varying HM vec3 wPos;
-varying float wf;
+varying float block;
 
 #include "uniformWorldConstants.h"
 #include "uniformPerFrameConstants.h"
@@ -58,7 +58,7 @@ highp float gwav(highp float x,highp float r,highp float l){//http://marupeke296
 #endif
 
 void main(){
-wf=0.;
+block=0.;
 POS4 worldPos;
 #ifndef BYPASS_PIXEL_SHADER
 	uv0 = TEXCOORD_0;
@@ -93,8 +93,8 @@ cPos = POSITION.xyz;
 wPos = worldPos.xyz;
 float wav = sin((POSITION.x+POSITION.z+POSITION.y-TOTAL_REAL_WORLD_TIME*2.)*1.57);
 //leaf
+vec3 frp = fract(POSITION.xyz);
 #ifdef ALPHA_TEST
-	vec3 frp = fract(POSITION.xyz);
 	if((color.r!=color.g&&color.g!=color.b && frp.y!=.015625)||(frp.y==.9375&&(frp.x==0.||frp.z==0.)))
 		gl_Position.x += wav*mix(.007,.015,uv1.y);
 #endif
@@ -115,9 +115,12 @@ float cameraDepth = length(-worldPos.xyz);
 ///// blended layer (mostly water) magic
 #ifndef SEASONS
 	if(.05<color.a&&color.a<.95){
-		wf=1.;
+		block=1.;
 		color.a = mix(color.a,1.,saturate(cameraDepth/FAR_CHUNKS_DISTANCE));
 	}
+#endif
+#ifdef BLEND
+	if(frp.x==.375||frp.x==.625||frp.z==.375||frp.z==.625)block=2.;
 #endif
 
 #ifndef BYPASS_PIXEL_SHADER

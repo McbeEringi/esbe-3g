@@ -32,7 +32,7 @@ varying vec4 fogColor;
 #endif
 varying HM vec3 cPos;
 varying HM vec3 wPos;
-varying float wf;
+varying float block;
 
 #include "uniformShaderConstants.h"
 #include "util.h"
@@ -60,6 +60,7 @@ float sat(vec3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
 	return v>0.?(v-min(min(col.r,col.g),col.b))/v:0.;
 }
 float pow5(float x){return x*x*x*x*x;}
+HM vec2 noise(HM vec2 p){return vec2(snoise(p),snoise(p+16.));}
 
 void main(){
 #ifdef BYPASS_PIXEL_SHADER
@@ -135,6 +136,7 @@ vec4 ambient = mix(//vec4(gamma.rgb,saturation)
 	if(uw)ambient = vec4(FOG_COLOR.rgb*.6+.4,.8);
 #ifdef USE_NORMAL
 	HM vec3 N = normalize(cross(dFdx(cPos),dFdy(cPos)));
+	float dotN = dot(normalize(-wPos),N);
 #endif
 
 //tonemap
@@ -150,17 +152,17 @@ if(inColor.r==inColor.g && inColor.g==inColor.b)ao = smoothstep(.48*daylight.y,.
 diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
 
 //water
-if(wf>.5){
+if(.5<block && block<1.5){
 	HM vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5);
 	vec2 wav = sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1; grid+=wav;
 	vec3 T = normalize(abs(wPos));float omsin = 1.-T.y;
-	vec4 water = mix(diffuse,vec4(mix(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*
+	vec4 water = mix(diffuse,vec4(mix(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*pow5(
 			#ifdef USE_NORMAL
-				pow5(1.-dot(normalize(-wPos),N))
+				1.-dotN
 			#else
-				omsin*omsin*omsin*omsin*omsin
+				omsin
 			#endif
-			);//fresnel
+			));//fresnel
 	vec2 skp = (wPos.xz*.4-(fract(grid*.625)-.5)*T.xz*omsin*omsin);
 	#ifdef FANCY
 		water = mix(water,vec4(mix(tex1.rgb,FOG_COLOR.rgb,length(T.xz)*.7),1),smoothstep(-.5,1.,snoise(skp/abs(wPos.y)-vec2(time*.02,0)+wav*.07))*T.y*sun.y);//c_ref
@@ -171,9 +173,15 @@ if(wf>.5){
 	water = mix(water,vec4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(vec2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = mix(diffuse,water,length(T.xz)*.5+.5);
 #if !defined(ALPHA_TEST) && defined(USE_NORMAL)
-}else if(!uw)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dot(normalize(-wPos),N))*sun.y*(tex1.g*.6+.4)*(snoise(cPos.xz)*.2+.8));
+}else if(!uw)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dotN)*sun.y*(tex1.g*.6+.4)*(snoise(cPos.xz)*.2+.8));
 #else
 }
+#endif
+
+//gate
+#ifdef BLEND
+	vec2 gate = vec2(cPos.x+cPos.z,cPos.y);
+	if(1.5<block)diffuse=mix(vec4(.2,0,1,.5),vec4(1,.5,1,1),(snoise(gate+noise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.));
 #endif
 
 //=*=*=  ESBE_3G end  =*=*=//
