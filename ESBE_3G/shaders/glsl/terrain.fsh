@@ -149,7 +149,13 @@ diffuse.rgb += max(uv1.x-.5,0.)*(1.-lum*lum)*mix(1.,.3,daylight.x*sun.y)*vec3(1.
 //shadow
 float ao = 1.;
 if(inColor.r==inColor.g && inColor.g==inColor.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,inColor.g);
-diffuse.rgb *= 1.-mix(.5,0.,min(sun.x,ao))*(1.-uv1.x)*daylight.x;
+float Nl =
+	#ifdef USE_NORMAL
+		mix(1.,smoothstep(-.7,1.,dot(vec3(0,.8,.6),N))*.9+.1,sun.y);
+	#else
+		1.;
+	#endif
+diffuse.rgb *= 1.-mix(.5,0.,min(min(sun.x,ao),Nl))*(1.-max(0.,uv1.x-sun.y*.7))*daylight.x;
 
 //water
 if(.5<block && block<1.5){

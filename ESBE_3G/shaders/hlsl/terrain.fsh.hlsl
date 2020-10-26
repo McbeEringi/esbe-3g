@@ -124,7 +124,13 @@ diffuse.rgb += max(PSInput.uv1.x-.5,0.)*(1.-lum*lum)*lerp(1.,.3,daylight.x*sun.y
 //shadow
 float ao = 1.;
 if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,PSInput.color.g);
-diffuse.rgb *= 1.-lerp(.5,0.,min(sun.x,ao))*(1.-PSInput.uv1.x)*daylight.x;
+float Nl =
+	#ifdef USE_NORMAL
+		lerp(1.,smoothstep(-.7,1.,dot(float3(0,.8,.6),N))*.9+.1,sun.y);
+	#else
+		1.;
+	#endif
+diffuse.rgb *= 1.-lerp(.5,0.,min(min(sun.x,ao),Nl))*(1.-max(0.,PSInput.uv1.x-sun.y*.7))*daylight.x;
 
 //water
 if(.5<PSInput.block){
