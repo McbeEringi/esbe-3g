@@ -1,4 +1,4 @@
-ver: mf{name,ver*2} start{desc,button}
+ver: mf{name,ver*2} start{desc} button.xcf
 
 0.1
 トーンマップの追加

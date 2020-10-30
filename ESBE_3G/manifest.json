@@ -1,15 +1,15 @@
 {
  "format_version":1,
  "header":{
- "name":"ESBE_3G v0.2",
+ "name":"ESBE_3G v0.3",
  "description":"A shader for Bedrock\nby @McbeEringi",
  "uuid":"ABD3317D-86B6-4490-84DB-1609C1B8040D",
- "version":[0,0,2],
+ "version":[0,0,3],
  "min_engine_version":[1,8,0]
  },
  "modules":[{
  "type":"resources",
  "uuid":"FC4050EE-8F77-4D84-A4EC-63B9B295C214",
- "version":[0,0,2]
+ "version":[0,0,3]
  }]
 }
