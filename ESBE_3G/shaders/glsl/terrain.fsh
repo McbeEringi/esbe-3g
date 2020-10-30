@@ -123,6 +123,7 @@ vec2 daylight = texture2D(TEXTURE_1,vec2(0.,1.)).rr;daylight=smoothstep(br-.2,br
 float nv = step(texture2D(TEXTURE_1,vec2(0)).r,.5);
 float dusk = min(smoothstep(.3,.5,daylight.y),smoothstep(1.,.8,daylight.y));
 bool uw = FOG_COLOR.a<.001;
+float sat = sat(diffuse.rgb);
 vec4 ambient = mix(//vec4(gamma.rgb,saturation)
 		vec4(1.,.97,.9,1.15),//indoor
 	mix(
@@ -187,7 +188,8 @@ if(.5<block && block<1.5){
 //gate
 #ifdef BLEND
 	vec2 gate = vec2(cPos.x+cPos.z,cPos.y);
-	if(1.5<block)diffuse=mix(vec4(.2,0,1,.5),vec4(1,.5,1,1),(snoise(gate+noise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.));
+	if(1.5<block && block<2.5)diffuse=mix(vec4(.2,0,1,.5),vec4(1,.5,1,1),(snoise(gate+noise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.));
+	else if(2.5<block && diffuse.a>.5 && sat<.2)diffuse.rgb=mix((FOG_COLOR.rgb+tex1.rgb)*.5,diffuse.rgb,dotN*.9+.1);
 #endif
 
 //=*=*=  ESBE_3G end  =*=*=//

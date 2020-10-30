@@ -121,6 +121,7 @@ float cameraDepth = length(-worldPos.xyz);
 #endif
 #ifdef BLEND
 	if(frp.x==.375||frp.x==.625||frp.z==.375||frp.z==.625)block=2.;
+	else if(frp.y==.0625)block=3.;
 #endif
 
 #ifndef BYPASS_PIXEL_SHADER
