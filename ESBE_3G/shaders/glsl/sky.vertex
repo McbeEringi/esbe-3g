@@ -12,7 +12,7 @@
 #endif
 uniform MAT4 WORLDVIEWPROJ;
 uniform vec4 FOG_COLOR;
-uniform vec2 FOG_CONTROL;
+uniform vec4 CURRENT_COLOR;
 attribute mediump vec4 POSITION;
 attribute vec4 COLOR;
 varying vec4 color;
