@@ -12,6 +12,6 @@
 	"esbe_scroll@common.scrolling_panel":{"$show_background":false,"$scrolling_content":"start.esbe_panel"},"esbe_fsc@common.fullscreen_header":{"$back_button_has_title":true,"$button_text":"ESBE info","$child_control":"start.esbe_scroll"},
 	"esbe_main@common.base_screen":{"button_mappings":[{"from_button_id":"button.menu_cancel","to_button_id":"button.menu_exit","mapping_type":"global"}],"$screen_bg_content":"persona.persona_screen_background_content","$screen_content":"start.esbe_fsc"},
 
-	"esbe_start":{"type":"stack_panel","orientation":"horizontal","controls":[{"ico":{"type":"image","texture":"ESBE_3G","size":[20,20]}},{"ver":{"type":"label","text":" §bESBE_3G\n §av0.3"}}]},
-	"copyright@common_buttons.light_content_button":{"anchor_from":"bottom_left","anchor_to":"bottom_left","size":[72,26],"$pressed_button_name":"button.menu_buy_game","$button_content":"start.esbe_start","$default_button_alpha":0.5,"$default_hover_alpha":0.5}
+	"esbe_start":{"type":"image","texture":"button","size":[72,21]},
+	"copyright@common_buttons.light_content_button":{"anchor_from":"bottom_left","anchor_to":"bottom_left","size":[76,25],"offset":[2,2],"$pressed_button_name":"button.menu_buy_game","$button_content":"start.esbe_start","$default_button_alpha":0.5,"$default_hover_alpha":0.5}
 }
