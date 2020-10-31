@@ -186,7 +186,7 @@ if(.5<block && block<1.5){
 #endif
 
 //gate
-#ifdef BLEND
+#if defined(BLEND) && defined(USE_NORMAL)
 	vec2 gate = vec2(cPos.x+cPos.z,cPos.y);
 	if(1.5<block && block<2.5)diffuse=mix(vec4(.2,0,1,.5),vec4(1,.5,1,1),(snoise(gate+noise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.));
 	else if(2.5<block && diffuse.a>.5 && sat<.2)diffuse.rgb=mix((FOG_COLOR.rgb+tex1.rgb)*.5,diffuse.rgb,dotN*.9+.1);
