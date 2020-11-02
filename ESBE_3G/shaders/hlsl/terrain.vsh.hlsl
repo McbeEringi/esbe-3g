@@ -94,8 +94,8 @@ PSInput.cPos=VSInput.position;
 PSInput.wPos=worldPos;
 float wav = sin((VSInput.position.x+VSInput.position.z+VSInput.position.y-TOTAL_REAL_WORLD_TIME*2.)*1.57);
 //leaf
+float3 frp = frac(VSInput.position);
 #ifdef ALPHA_TEST
-	float3 frp = frac(VSInput.position);
 	if((VSInput.color.r!=VSInput.color.g&&VSInput.color.g!=VSInput.color.b && frp.y!=.015625)||(frp.y==.9375&&(frp.x==0.||frp.z==0.)))
 		PSInput.position.x += wav*lerp(.007,.015,VSInput.uv1.y);
 #endif
@@ -126,5 +126,9 @@ float cameraDepth = length(-worldPos);
 		PSInput.block=1.;
 		PSInput.color.a = lerp(VSInput.color.a,1.,saturate(cameraDepth/FAR_CHUNKS_DISTANCE));
 	}
+#endif
+#ifdef BLEND
+	if(frp.x==.375||frp.x==.625||frp.z==.375||frp.z==.625)PSInput.block=2.;
+	else if(frp.y==.0625)PSInput.block=3.;
 #endif
 }

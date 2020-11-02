@@ -98,6 +98,7 @@ float2 daylight = TEXTURE_1.Sample(TextureSampler1,float2(0.,1.)).rr;daylight=sm
 float nv = step(TEXTURE_1.Sample(TextureSampler1,float2(0,0)).r,.5);
 float dusk = min(smoothstep(.3,.5,daylight.y),smoothstep(1.,.8,daylight.y));
 bool uw = FOG_COLOR.a<.001;
+float sat = sat(diffuse.rgb);
 float4 ambient = lerp(//float4(gamma.rgb,saturation)
 		float4(1.,.97,.9,1.15),//indoor
 	lerp(
@@ -133,7 +134,7 @@ float Nl =
 diffuse.rgb *= 1.-lerp(.5,0.,min(min(sun.x,ao),Nl))*(1.-max(0.,PSInput.uv1.x-sun.y*.7))*daylight.x;
 
 //water
-if(.5<PSInput.block){
+if(.5<PSInput.block && PSInput.block<1.5){
 	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5));
 	float2 wav = sin(grid.yx*float2(3.14,1.57)+time*4.)*.1; grid+=wav;
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
@@ -152,11 +153,18 @@ if(.5<PSInput.block){
 	float3 Ts = normalize(float3(abs(skp.x),PSInput.wPos.y,skp.y));
 	float sunT = lerp(-.1,.4,saturate(daylight.y*1.5-.5));
 	water = lerp(water,float4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(float2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
-	diffuse = lerp(diffuse,water,length(T.xz)*.5+.5);
+	diffuse = lerp(diffuse,water,(length(T.xz)*.5+.5)*smoothstep(0.,1.,PSInput.wPos));
 #if !defined(ALPHA_TEST) && defined(USE_NORMAL)
 }else if(!uw)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dotN)*sun.y*(tex1.g*.6+.4)*(snoise(PSInput.cPos.xz)*.2+.8));
 #else
 }
+#endif
+
+//gate
+#if defined(BLEND) && defined(USE_NORMAL)
+	float2 gate = float2(PSInput.cPos.x+PSInput.cPos.z,PSInput.cPos.y);
+	if(1.5<PSInput.block && PSInput.block<2.5)diffuse=lerp(float4(.2,0,1,.5),float4(1,.5,1,1),(snoise(gate+noise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.));
+	else if(2.5<PSInput.block && diffuse.a>.5 && sat<.2)diffuse.rgb=lerp((FOG_COLOR.rgb+tex1.rgb)*.5,diffuse.rgb,dotN*.9+.1);
 #endif
 
 //=*=*=  ESBE_3G end  =*=*=//
