@@ -163,7 +163,7 @@ if(.5<PSInput.block && PSInput.block<1.5){
 //gate
 #if defined(BLEND) && defined(USE_NORMAL)
 	float2 gate = float2(PSInput.cPos.x+PSInput.cPos.z,PSInput.cPos.y);
-	if(1.5<PSInput.block && PSInput.block<2.5)diffuse=lerp(float4(.2,0,1,.5),float4(1,.5,1,1),(snoise(gate+noise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.));
+	if(1.5<PSInput.block && PSInput.block<2.5)diffuse=lerp(diffuse,lerp(float4(.2,0,1,.5),float4(1,.5,1,1),(snoise(gate+noise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.)),.7);
 	else if(2.5<PSInput.block && diffuse.a>.5 && sat<.2)diffuse.rgb=lerp((FOG_COLOR.rgb+tex1.rgb)*.5,diffuse.rgb,dotN*.9+.1);
 #endif
 
