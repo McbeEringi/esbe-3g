@@ -129,7 +129,7 @@ float ao = 1.;
 if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,PSInput.color.g);
 float Nl =
 	#ifdef USE_NORMAL
-		lerp(1.,smoothstep(lerp(-.7,0.,dusk),1.,dot(normalize(float3(dusk*50.,4,3)),float3(abs(N.x),N.yz))),sun.y*lerp(1.,.7,dusk));
+		lerp(1.,smoothstep(-.7+dusk,1.,dot(normalize(float3(dusk*10.,4,3)),float3(abs(N.x),N.yz))),sun.y*(1.-dusk*.1));
 	#else
 		1.;
 	#endif

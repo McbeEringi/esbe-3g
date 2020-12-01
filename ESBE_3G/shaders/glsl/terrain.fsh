@@ -154,7 +154,7 @@ float ao = 1.;
 if(inColor.r==inColor.g && inColor.g==inColor.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,inColor.g);
 float Nl =
 	#ifdef USE_NORMAL
-		mix(1.,smoothstep(mix(-.7,0.,dusk),1.,dot(normalize(vec3(dusk*50.,4,3)),vec3(abs(N.x),N.yz))),sun.y*mix(1.,.7,dusk));
+		mix(1.,smoothstep(-.7+dusk,1.,dot(normalize(vec3(dusk*10.,4,3)),vec3(abs(N.x),N.yz))),sun.y*(1.-dusk*.1));
 	#else
 		1.;
 	#endif
