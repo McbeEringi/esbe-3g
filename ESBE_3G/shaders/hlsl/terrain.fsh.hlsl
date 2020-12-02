@@ -157,7 +157,7 @@ if(.5<PSInput.block && PSInput.block<1.5){
 	water = lerp(water,float4(FOG_COLOR.rgb*.5+.8,.9),smoothstep(.97,1.,dot(float2(cos(sunT),-sin(sunT)),Ts.xy))*smoothstep(.5,1.,normalize(FOG_COLOR.rgb).r)*sun.y);//sun
 	diffuse = lerp(diffuse,water,(length(T.xz)*.5+.5)*smoothstep(0.,1.,PSInput.wPos));
 #if !defined(ALPHA_TEST) && defined(USE_NORMAL)
-}else if(uw<.5)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dotN)*sun.y*(tex1.g*.6+.4)*(snoise(PSInput.cPos.xz)*.2+.8));
+}else if(uw<.5)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,N.y)*pow5(1.-dotN)*sun.y*tex1.g*(snoise(PSInput.cPos.xz)*.2+.8));
 #else
 }
 #endif
