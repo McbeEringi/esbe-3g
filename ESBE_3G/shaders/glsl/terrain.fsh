@@ -122,7 +122,7 @@ vec4 tex1 = texture2D( TEXTURE_1, fuv1 );
 //datas
 HM float time = TOTAL_REAL_WORLD_TIME;
 float nv = step(texture2D(TEXTURE_1,vec2(0)).r,.5);
-float dusk = min(smoothstep(.3,.5,daylight.y),smoothstep(1.,.8,daylight.y));
+float dusk = min(smoothstep(.2,.4,daylight.y),smoothstep(1.,.8,daylight.y));
 float uw = step(FOG_CONTROL.x,0.);
 float nether = FOG_CONTROL.x/FOG_CONTROL.y;nether=step(.1,nether)-step(.12,nether);
 float sat = sat(diffuse.rgb);
