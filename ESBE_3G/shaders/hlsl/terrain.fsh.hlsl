@@ -29,7 +29,7 @@ float aces(float x){
 float3 aces3(float3 x){return float3(aces(x.x),aces(x.y),aces(x.z));}
 float3 tone(float3 col,float4 gs){
 	float lum = dot(col,float3(.299,.587,.114));//http://poynton.ca/notes/colour_and_gamma/ColorFAQ.html#RTFToC11
-	col = aces3((col-lum)*gs.a+lum)*1.18;// /aces(1.3);
+	col = aces3((col-lum)*gs.a+lum)*1.2;// /aces(1.1);
 	return pow(col,1./gs.rgb);
 }
 float sat(float3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
