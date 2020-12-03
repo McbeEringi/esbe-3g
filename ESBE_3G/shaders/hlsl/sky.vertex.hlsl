@@ -10,7 +10,8 @@ struct VS_Input{
 
 struct PS_Input{
 	float4 position : SV_Position;
-	float4 color : COLOR;
+	float fog : fog;
+	float3 pos : pos;
 #ifdef GEOMETRY_INSTANCEDSTEREO
 	uint instanceID : SV_InstanceID;
 #endif
@@ -33,5 +34,6 @@ void main(in VS_Input VSInput, out PS_Input PSInput){
 #ifdef VERTEXSHADER_INSTANCEDSTEREO
 	PSInput.renTarget_id = VSInput.instanceID;
 #endif
-	PSInput.color = lerp(CURRENT_COLOR,FOG_COLOR,VSInput.color.r);
+	PSInput.fog = VSInput.color.r;
+	PSInput.pos = VSInput.position.xyz;
 }

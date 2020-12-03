@@ -2,7 +2,8 @@
 
 struct PS_Input{
 	float4 position : SV_Position;
-	float4 color : COLOR;
+	float fog : fog;
+	float3 pos : pos;
 };
 
 struct PS_Output{
@@ -11,5 +12,5 @@ struct PS_Output{
 
 ROOT_SIGNATURE
 void main(in PS_Input PSInput, out PS_Output PSOutput){
-	PSOutput.color = PSInput.color;
+	PSOutput.color = lerp(CURRENT_COLOR,FOG_COLOR,PSInput.fog);
 }

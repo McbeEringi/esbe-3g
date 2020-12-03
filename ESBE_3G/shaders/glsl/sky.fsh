@@ -7,5 +7,15 @@
 	out vec4 FragColor;
 	#define gl_FragColor FragColor
 #endif
-varying vec4 color;
-void main(){gl_FragColor = color;}
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+	#define HM highp
+#else
+	#define HM mediump
+#endif
+uniform vec4 FOG_COLOR;
+uniform vec4 CURRENT_COLOR;
+varying float fog;
+varying HM vec3 pos;
+void main(){
+	gl_FragColor = mix(CURRENT_COLOR,FOG_COLOR,fog);
+}

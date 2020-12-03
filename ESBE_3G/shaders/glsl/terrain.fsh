@@ -122,19 +122,19 @@ vec4 tex1 = texture2D( TEXTURE_1, fuv1 );
 //datas
 HM float time = TOTAL_REAL_WORLD_TIME;
 float nv = step(texture2D(TEXTURE_1,vec2(0)).r,.5);
-float dusk = min(smoothstep(.2,.4,daylight.y),smoothstep(1.,.8,daylight.y));
+float dusk = min(smoothstep(.1,.4,daylight.y),smoothstep(1.,.8,daylight.y));
 float uw = step(FOG_CONTROL.x,0.);
 float nether = FOG_CONTROL.x/FOG_CONTROL.y;nether=step(.1,nether)-step(.12,nether);
 float sat = satur(diffuse.rgb);
 vec4 ambient = mix(//vec4(gamma.rgb,saturation)
 		vec4(1.,.97,.9,1.15),//indoor
 	mix(
-		vec4(.67,.81,.85,.9),//rain
+		vec4(.54,.72,.9,.9),//rain
 	mix(mix(
-		vec4(.9,.93,1.,1.),//night
+		vec4(.45,.59,.9,1.),//night
 		vec4(1.15,1.17,1.1,1.2),//day
 	daylight.y),
-		vec4(1.4,1.,.7,.8),//dusk
+		vec4(1.4,.9,.5,.8),//dusk
 	dusk),weather),sun.y*nv);
 	if(uw+nether>.5)ambient = vec4(FOG_COLOR.rgb*.6+.4,.8);
 #ifdef USE_NORMAL
