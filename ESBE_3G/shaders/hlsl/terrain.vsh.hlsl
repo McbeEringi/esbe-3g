@@ -47,11 +47,23 @@ float gwav(float x,float r,float l){//http://marupeke296.com/Shader_No5_PeakWave
 	for(int i=0;i<3;i++)T=T-(a*T-b*sin(T)-x)/(a-b*cos(T));
 	return r*l*cos(T)/pi/4.;
 }
+float hash11(float p){p=frac(p*.1031);p*=p+33.33;return frac((p+p)*p);}
+float random(float3 p){
+	p.x = dot(vec3(p.x==16.?0.:p.x,abs(p.y-8.),p.z==16.?0.:p.z),float3(.33))+TOTAL_REAL_WORLD_TIME;
+	return lerp(hash11(floor(p.x)),hash11(ceil(p.x)),smoothstep(0.,1.,frac(p.x)))*2.;
+}
 #endif
 
 ROOT_SIGNATURE
 void main(in VS_Input VSInput, out PS_Input PSInput){
 PSInput.block=0.;
+float wav = sin((VSInput.position.x+VSInput.position.z+VSInput.position.y-TOTAL_REAL_WORLD_TIME*2.)*1.57);
+float rand =
+#ifdef FANCY
+	random(VSInput.position.xyz);
+#else
+	1.;
+#endif
 #ifndef BYPASS_PIXEL_SHADER
 	PSInput.uv0 = VSInput.uv0;
 	PSInput.uv1 = VSInput.uv1;
@@ -71,7 +83,7 @@ PSInput.block=0.;
 		#ifndef SEASONS
 			if(.05<VSInput.color.a&&VSInput.color.a<.95){
 				#ifdef FANCY
-					worldPos.y+=gwav(VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.,lerp(.3,1.,VSInput.uv1.y),4.)*frac(VSInput.position.y)*saturate(1.-length(worldPos)/FAR_CHUNKS_DISTANCE)*.2;
+					worldPos.y+=gwav(VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.,lerp(.3,.8,VSInput.uv1.y)*rand,4.)*frac(VSInput.position.y)*saturate(1.-length(worldPos)/FAR_CHUNKS_DISTANCE)*.2;
 				#else
 					float wwav = sin((VSInput.position.x+VSInput.position.z-TOTAL_REAL_WORLD_TIME*2.)*1.57)*.5+.5;
 					worldPos.y+=(wwav*wwav-.5)*frac(VSInput.position.y)*saturate(1.-length(worldPos)/FAR_CHUNKS_DISTANCE)*lerp(.02,.07,VSInput.uv1.y);
@@ -92,12 +104,11 @@ PSInput.block=0.;
 #endif
 PSInput.cPos=VSInput.position;
 PSInput.wPos=worldPos;
-float wav = sin((VSInput.position.x+VSInput.position.z+VSInput.position.y-TOTAL_REAL_WORLD_TIME*2.)*1.57);
 //leaf
 float3 frp = frac(VSInput.position);
 #ifdef ALPHA_TEST
 	if((VSInput.color.r!=VSInput.color.g&&VSInput.color.g!=VSInput.color.b && frp.y!=.015625)||(frp.y==.9375&&(frp.x==0.||frp.z==0.)))
-		PSInput.position.x += wav*lerp(.007,.015,VSInput.uv1.y);
+		PSInput.position.x += wav*rand*lerp(.007,.015,VSInput.uv1.y);
 #endif
 
 #ifdef GEOMETRY_INSTANCEDSTEREO
@@ -118,6 +129,9 @@ float cameraDepth = length(-worldPos);
 	#endif
 	PSInput.fogColor.rgb = FOG_COLOR.rgb;
 	PSInput.fogColor.a = saturate((len - FOG_CONTROL.x) / (FOG_CONTROL.y - FOG_CONTROL.x));
+	float fcxdy = FOG_CONTROL.x/FOG_CONTROL.y;
+	if(.1<fcxdy&&fcxdy<.12)PSInput.position.xy += wav*PSInput.fogColor.a*.15*(rand*.5+.5);//nether
+	else if(FOG_CONTROL.x<.01)PSInput.position.x += wav*PSInput.fogColor.a*.1*rand;//uw
 #endif
 
 ///// blended layer (mostly water) magic

@@ -73,7 +73,7 @@ float2 sun = smoothstep(float2(.855,.4),float2(.875,1.),PSInput.uv1.yy);
 float weather = smoothstep(.7,.96,FOG_CONTROL.y);
 float br = TEXTURE_1.Sample(TextureSampler1,float2(.5,0.)).r;
 float2 daylight = TEXTURE_1.Sample(TextureSampler1,float2(0.,1.)).rr;daylight=smoothstep(br-.2,br+.2,daylight);daylight.x*=weather;
-float2 fuv1 = float2(PSInput.uv1.x-daylight.y*(weather*.9+.1)*lerp(sun.x,sun.y,.2),PSInput.uv1.y);
+float2 fuv1 = float2(PSInput.uv1.x-smoothstep(.2,1.,daylight.y)*(weather*.9+.1)*lerp(sun.y,sun.x,smoothstep(.8,1.,daylight.y)*.8),PSInput.uv1.y);
 float4 tex1 = TEXTURE_1.Sample(TextureSampler1, fuv1);
 #if !defined(ALWAYS_LIT)
 	diffuse = diffuse * tex1;
@@ -129,7 +129,7 @@ float ao = 1.;
 if(PSInput.color.r==PSInput.color.g && PSInput.color.g==PSInput.color.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,PSInput.color.g);
 float Nl =
 	#ifdef USE_NORMAL
-		lerp(1.,smoothstep(-.7+dusk,1.,dot(normalize(float3(dusk*10.,4,3)),float3(abs(N.x),N.yz))),sun.y*(1.-dusk*.1));
+		lerp(1.,smoothstep(-.7+dusk,1.,dot(normalize(float3(dusk*6.,4,3)),float3(abs(N.x),N.yz))),sun.y);
 	#else
 		1.;
 	#endif
@@ -137,7 +137,7 @@ diffuse.rgb *= 1.-lerp(.5,0.,min(min(sun.x,ao),Nl))*(1.-max(0.,fuv1.x-sun.y*.7))
 
 //water
 if(.5<PSInput.block && PSInput.block<1.5){
-	float2 grid = mul((PSInput.cPos.xz-time),float2x2(1,-.5,.5,.5));
+	float2 grid = mul((PSInput.cPos.xz+smoothstep(0.,8.,abs(PSInput.cPos.y-8.))*.5-time),float2x2(1,-.5,.5,.5));
 	float2 wav = sin(grid.yx*float2(3.14,1.57)+time*4.)*.1; grid+=wav;
 	float3 T = normalize(abs(PSInput.wPos));float omsin = 1.-T.y;
 	float4 water = lerp(diffuse,float4(lerp(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*

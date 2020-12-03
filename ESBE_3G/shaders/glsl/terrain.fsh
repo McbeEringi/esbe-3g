@@ -98,7 +98,7 @@ vec2 sun = smoothstep(vec2(.855,.4),vec2(.875,1.),uv1.yy);
 float weather = smoothstep(.7,.96,FOG_CONTROL.y);
 float br = texture2D(TEXTURE_1,vec2(.5,0.)).r;
 vec2 daylight = texture2D(TEXTURE_1,vec2(0.,1.)).rr;daylight=smoothstep(br-.2,br+.2,daylight);daylight.x*=weather;
-vec2 fuv1 = vec2(uv1.x-daylight.y*(weather*.9+.1)*mix(sun.x,sun.y,.2),uv1.y);
+vec2 fuv1 = vec2(uv1.x-smoothstep(.2,1.,daylight.y)*(weather*.9+.1)*mix(sun.y,sun.x,smoothstep(.8,1.,daylight.y)*.8),uv1.y);
 vec4 tex1 = texture2D( TEXTURE_1, fuv1 );
 #if !defined(ALWAYS_LIT)
 	diffuse *= tex1;
@@ -154,7 +154,7 @@ float ao = 1.;
 if(inColor.r==inColor.g && inColor.g==inColor.b)ao = smoothstep(.48*daylight.y,.52*daylight.y,inColor.g);
 float Nl =
 	#ifdef USE_NORMAL
-		mix(1.,smoothstep(-.7+dusk,1.,dot(normalize(vec3(dusk*10.,4,3)),vec3(abs(N.x),N.yz))),sun.y*(1.-dusk*.1));
+		mix(1.,smoothstep(-.7+dusk,1.,dot(normalize(vec3(dusk*6.,4,3)),vec3(abs(N.x),N.yz))),sun.y);
 	#else
 		1.;
 	#endif
@@ -162,7 +162,7 @@ diffuse.rgb *= 1.-mix(.5,0.,min(min(sun.x,ao),Nl))*(1.-max(0.,fuv1.x-sun.y*.7))*
 
 //water
 if(.5<block && block<1.5){
-	HM vec2 grid = (cPos.xz-time)*mat2(1,-.5,.5,.5);
+	HM vec2 grid = (cPos.xz+smoothstep(0.,8.,abs(cPos.y-8.))*.5-time)*mat2(1,-.5,.5,.5);
 	vec2 wav = sin(grid.yx*vec2(3.14,1.57)+time*4.)*.1; grid+=wav;
 	vec3 T = normalize(abs(wPos));float omsin = 1.-T.y;
 	vec4 water = mix(diffuse,vec4(mix(tex1.rgb,FOG_COLOR.rgb,sun.y),1),.02+.98*pow5(
