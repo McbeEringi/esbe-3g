@@ -55,7 +55,7 @@ highp float gwav(highp float x,highp float r,highp float l){//http://marupeke296
 	for(int i=0;i<3;i++)T=T-(a*T-b*sin(T)-x)/(a-b*cos(T));
 	return r*l*cos(T)/pi/4.;
 }
-highp float hash11(highp float p){p=fract(p*.1031);p*=p+33.33;return fract((p+p)*p);}
+highp float hash11(highp float p){p=fract(p*.1031);p*=p+33.33;return fract((p+p)*p);}//https://www.shadertoy.com/view/4djSRW
 highp float random(POS3 p){
 	p.x = dot(vec3(p.x==16.?0.:p.x,abs(p.y-8.),p.z==16.?0.:p.z),vec3(.33))+TOTAL_REAL_WORLD_TIME;
 	return mix(hash11(floor(p.x)),hash11(ceil(p.x)),smoothstep(0.,1.,fract(p.x)))*2.;

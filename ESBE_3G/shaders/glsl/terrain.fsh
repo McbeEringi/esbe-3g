@@ -55,7 +55,7 @@ vec3 tone(vec3 col,vec4 gs){
 	col = aces3((col-lum)*gs.a+lum)*1.2;// /aces(1.1);
 	return pow(col,1./gs.rgb);
 }
-float sat(vec3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
+float satur(vec3 col){//https://qiita.com/akebi_mh/items/3377666c26071a4284ee
 	float v=max(max(col.r,col.g),col.b);
 	return v>0.?(v-min(min(col.r,col.g),col.b))/v:0.;
 }
@@ -125,7 +125,7 @@ float nv = step(texture2D(TEXTURE_1,vec2(0)).r,.5);
 float dusk = min(smoothstep(.2,.4,daylight.y),smoothstep(1.,.8,daylight.y));
 float uw = step(FOG_CONTROL.x,0.);
 float nether = FOG_CONTROL.x/FOG_CONTROL.y;nether=step(.1,nether)-step(.12,nether);
-float sat = sat(diffuse.rgb);
+float sat = satur(diffuse.rgb);
 vec4 ambient = mix(//vec4(gamma.rgb,saturation)
 		vec4(1.,.97,.9,1.15),//indoor
 	mix(
@@ -190,7 +190,7 @@ if(.5<block && block<1.5){
 //gate
 #if defined(BLEND) && defined(USE_NORMAL)
 	vec2 gate = vec2(cPos.x+cPos.z,cPos.y);
-	if(1.5<block && block<2.5)diffuse=mix(diffuse,mix(vec4(.2,0,1,.5),vec4(1,.5,1,1),(snoise(gate+noise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.)),.7);
+	if(1.5<block && block<2.5)diffuse=mix(diffuse,mix(vec4(.2,0,1,.5),vec4(1,.5,1,1),(snoise(gate+snoise(gate+time*.1)-time*.1)*.5+.5)*(dotN*-.5+1.)),.7);
 	else if(2.5<block && diffuse.a>.5 && sat<.2)diffuse.rgb=mix((FOG_COLOR.rgb+tex1.rgb)*.5,diffuse.rgb,dotN*.9+.1);
 #endif
 

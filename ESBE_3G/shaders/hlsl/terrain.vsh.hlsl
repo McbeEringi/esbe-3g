@@ -47,9 +47,9 @@ float gwav(float x,float r,float l){//http://marupeke296.com/Shader_No5_PeakWave
 	for(int i=0;i<3;i++)T=T-(a*T-b*sin(T)-x)/(a-b*cos(T));
 	return r*l*cos(T)/pi/4.;
 }
-float hash11(float p){p=frac(p*.1031);p*=p+33.33;return frac((p+p)*p);}
+float hash11(float p){p=frac(p*.1031);p*=p+33.33;return frac((p+p)*p);}//https://www.shadertoy.com/view/4djSRW
 float random(float3 p){
-	p.x = dot(vec3(p.x==16.?0.:p.x,abs(p.y-8.),p.z==16.?0.:p.z),float3(.33))+TOTAL_REAL_WORLD_TIME;
+	p.x = dot(float3(p.x==16.?0.:p.x,abs(p.y-8.),p.z==16.?0.:p.z),.33)+TOTAL_REAL_WORLD_TIME;
 	return lerp(hash11(floor(p.x)),hash11(ceil(p.x)),smoothstep(0.,1.,frac(p.x)))*2.;
 }
 #endif
