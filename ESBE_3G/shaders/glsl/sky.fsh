@@ -14,8 +14,7 @@
 #endif
 uniform vec4 FOG_COLOR;
 uniform vec4 CURRENT_COLOR;
-varying float fog;
 varying HM vec3 pos;
 void main(){
-	gl_FragColor = mix(CURRENT_COLOR,FOG_COLOR,fog);
+	gl_FragColor = mix(FOG_COLOR,CURRENT_COLOR,smoothstep(-.05,.05,pos.y));
 }

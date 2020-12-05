@@ -10,7 +10,6 @@ struct VS_Input{
 
 struct PS_Input{
 	float4 position : SV_Position;
-	float fog : fog;
 	float3 pos : pos;
 #ifdef GEOMETRY_INSTANCEDSTEREO
 	uint instanceID : SV_InstanceID;
@@ -22,11 +21,13 @@ struct PS_Input{
 
 ROOT_SIGNATURE
 void main(in VS_Input VSInput, out PS_Input PSInput){
+	float3 p = VSInput.position;
+	p.y += mix(.1,-.2,step(.1,abs(p.x+p.z)));
 #ifdef INSTANCEDSTEREO
 	int i = VSInput.instanceID;
-	PSInput.position = mul(WORLDVIEWPROJ_STEREO[i],float4(VSInput.position,1));
+	PSInput.position = mul(WORLDVIEWPROJ_STEREO[i],float4(p,1));
 #else
-	PSInput.position = mul(WORLDVIEWPROJ,float4(VSInput.position,1));
+	PSInput.position = mul(WORLDVIEWPROJ,float4(p,1));
 #endif
 #ifdef GEOMETRY_INSTANCEDSTEREO
 	PSInput.instanceID = VSInput.instanceID;
@@ -34,6 +35,5 @@ void main(in VS_Input VSInput, out PS_Input PSInput){
 #ifdef VERTEXSHADER_INSTANCEDSTEREO
 	PSInput.renTarget_id = VSInput.instanceID;
 #endif
-	PSInput.fog = VSInput.color.r;
-	PSInput.pos = VSInput.position.xyz;
+	PSInput.pos = p;
 }
