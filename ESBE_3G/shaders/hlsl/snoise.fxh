@@ -1,7 +1,6 @@
 #ifndef SNOISE_H
 #define SNOISE_H
 //https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl
-
 float3 mod289(float3 x){return x-floor(x*(1./289.))*289.;}
 float2 mod289(float2 x){return x-floor(x*(1./289.))*289.;}
 float3 permute(float3 x){return mod289(x*(x*34.+1.));}
@@ -15,5 +14,4 @@ float snoise(float2 v){
 	m*=rsqrt(a0*a0+h*h);float3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;
 	return 100.*dot(m,g);//[-1.0~1.0]
 }
-
 #endif
