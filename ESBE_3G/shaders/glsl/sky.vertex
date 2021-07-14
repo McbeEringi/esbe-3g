@@ -1,22 +1,22 @@
 // __multiversion__
 // This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.
-
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+	#define HM highp
+#else
+	#define HM mediump
+#endif
 #include "vertexVersionSimple.h"
-
-#include "uniformWorldConstants.h"
-#include "uniformPerFrameConstants.h"
-#include "uniformShaderConstants.h"
-
+uniform MAT4 WORLDVIEWPROJ;
 attribute mediump vec4 POSITION;
 attribute vec4 COLOR;
+varying float fog;
+varying HM vec2 pos;
+void main(){
 
-varying vec4 color;
+vec4 p=POSITION;
+p.y-=length(p.xz)*.2;
+gl_Position=WORLDVIEWPROJ*p;
+pos=POSITION.xz;
+fog=COLOR.r;
 
-const float fogNear = 0.3;
-
-void main()
-{
-    gl_Position = WORLDVIEWPROJ * POSITION;
-
-    color = mix( CURRENT_COLOR, FOG_COLOR, COLOR.r );
 }
