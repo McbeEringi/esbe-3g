@@ -43,7 +43,7 @@ vec3 tone(vec3 col, vec4 gs){
 	col=pow(col,1./gs.rgb);
 	float lum=dot(col,vec3(.298912,.586611,.114478));
 	col=aces((col-lum)*gs.a+lum);
-	return col/aces(vec3(1));//exposure
+	return col/aces(vec3(1.7));//exposure
 }
 
 void main(){
@@ -118,9 +118,9 @@ float nether=
 #endif
 float l01w=l01*weather;
 vec4 ambient=
-	mix(mix(vec4(1.02,1.,0.98,1.1),//indoor
+	mix(mix(vec4(1.,.98,.96,1.1),//indoor
 	mix(vec4(.86,.94,1.,.95),//rain
-	mix(mix(vec4(.97,.9,1.,.9),//night
+	mix(mix(vec4(.94,.9,1.,.9),//night
 	vec4(1.03,1.02,1.,1.1),//noon
 	l01),vec4(1,.85,.7,1),//dusk
 	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+3.)*.25,1),//from fog
