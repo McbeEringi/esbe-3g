@@ -23,7 +23,7 @@
 #endif
 
 #ifdef FOG
-	varying vec4 fogColor;
+	varying float fog;
 #endif
 
 #include "uniformWorldConstants.h"
@@ -43,10 +43,6 @@ POS4 worldPos;
 #else
 	worldPos.xyz=(POSITION.xyz*CHUNK_ORIGIN_AND_SCALE.w)+CHUNK_ORIGIN_AND_SCALE.xyz;
 	worldPos.w=1.;
-
-	// Transform to view space before projection instead of all at once to avoid floating point errors
-	// Not required for entities because they are already offset by camera translation before rendering
-	// World position here is calculated above and can get huge
 	POS4 pos=WORLDVIEW*worldPos;
 	pos=PROJ*pos;
 #endif
@@ -64,8 +60,7 @@ gl_Position=pos;
 	#ifdef ALLOW_FADE
 		len+=RENDER_CHUNK_FOG_ALPHA;
 	#endif
-	fogColor.rgb=FOG_COLOR.rgb;
-	fogColor.a=clamp((len-FOG_CONTROL.x)/(FOG_CONTROL.y-FOG_CONTROL.x),0.,1.);
+	fog=clamp((len-FOG_CONTROL.x)/(FOG_CONTROL.y-FOG_CONTROL.x),0.,1.);
 #endif
 
 ///// esbe water detection

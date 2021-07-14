@@ -1,4 +1,4 @@
-ver: mf{name,ver*2} start{desc} button.xcf
+ver: mf{name,ver*2} en.lang button.xcf
 
 0.1
 トーンマップの追加
@@ -18,3 +18,6 @@ ver: mf{name,ver*2} start{desc} button.xcf
 光源処理の改良
 ゆらぎのエフェクトの追加と改良
 UIの改良
+
+1.0
+開発再開に伴いリセット
