@@ -97,7 +97,7 @@ vec4 inColor=color;
 //=*=*=
 float l01=linearstep(texture2D(TEXTURE_1,vec2(0)).r*3.6,1.,texture2D(TEXTURE_1,vec2(0,1)).r);
 vec2 sun=vec2(smoothstep(.5,1.,uv1.y),smoothstep(.865,.875,uv1.y));
-float dusk=min(smoothstep(0.4,0.55,l01),smoothstep(0.8,0.65,l01));
+float dusk=min(smoothstep(0.2,0.4,l01),smoothstep(0.8,0.6,l01));
 float weather=
 #ifdef FOG
 	smoothstep(.3,.8,FOG_CONTROL.x);//.7,.96,FOG_CONTROL.y);
@@ -118,11 +118,11 @@ float nether=
 #endif
 float l01w=l01*weather;
 vec4 ambient=
-	mix(mix(vec4(1.,.98,.96,1.1),//indoor
-	mix(vec4(.86,.94,1.,.95),//rain
-	mix(mix(vec4(.94,.9,1.,.9),//night
+	mix(mix(vec4(1.,.98,0.96,1.1),//indoor
+	mix(vec4(.8,.86,.9,.95),//rain
+	mix(mix(vec4(.86,.8,.9,1.),//night
 	vec4(1.03,1.02,1.,1.1),//noon
-	l01),vec4(1,.85,.7,1),//dusk
+	l01),vec4(1,.7,.5,.9),//dusk
 	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+3.)*.25,1),//from fog
 	max(uw,nether));
 

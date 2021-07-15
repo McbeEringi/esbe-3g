@@ -26,27 +26,32 @@
 	varying float fog;
 #endif
 
+varying float block;
+
 #include "uniformWorldConstants.h"
 #include "uniformPerFrameConstants.h"
 #include "uniformRenderChunkConstants.h"
+uniform highp float TOTAL_REAL_WORLD_TIME;
 
 attribute POS4 POSITION;
 attribute vec4 COLOR;
 attribute vec2 TEXCOORD_0;
 attribute vec2 TEXCOORD_1;
 
+highp float hash11(highp float p){p=fract(p*.1031);p*=p+33.33;return fract((p+p)*p);}
+highp float random(highp float p){
+	p=p*.3+TOTAL_REAL_WORLD_TIME;
+	return mix(hash11(floor(p)),hash11(ceil(p)),smoothstep(0.,1.,fract(p)))*2.;
+}
+
 void main(){
 POS4 worldPos;
-#ifdef AS_ENTITY_RENDERER
-	POS4 pos=WORLDVIEWPROJ*POSITION;
-	worldPos=pos;
-#else
-	worldPos.xyz=(POSITION.xyz*CHUNK_ORIGIN_AND_SCALE.w)+CHUNK_ORIGIN_AND_SCALE.xyz;
-	worldPos.w=1.;
-	POS4 pos=WORLDVIEW*worldPos;
-	pos=PROJ*pos;
-#endif
-gl_Position=pos;
+float camDist;
+block=0.;
+// wave
+POS3 p=vec3(POSITION.x==16.?0.:POSITION.x,abs(POSITION.y-8.),POSITION.z==16.?0.:POSITION.z);
+float wav=sin(TOTAL_REAL_WORLD_TIME*3.5-dot(p,vec3(2,1.5,1)));
+float rand=random(dot(p,vec3(1)));
 
 #ifndef BYPASS_PIXEL_SHADER
 	uv0=TEXCOORD_0;
@@ -54,6 +59,31 @@ gl_Position=pos;
 	color=COLOR;
 #endif
 
+// water
+#ifndef SEASONS
+	if(color.a<.95 && color.a>.05){
+		block=1.;
+		camDist=clamp(length(-worldPos.xyz)/FAR_CHUNKS_DISTANCE,0.,1.);
+		color.a=mix(color.a,1.,camDist);
+	}
+#endif
+
+#ifdef AS_ENTITY_RENDERER
+	POS4 pos=WORLDVIEWPROJ*POSITION;
+	worldPos=pos;
+#else
+	worldPos=vec4(POSITION.xyz*CHUNK_ORIGIN_AND_SCALE.w+CHUNK_ORIGIN_AND_SCALE.xyz,1);
+	if(block==1.)worldPos.y+=wav*.05*fract(POSITION.y)*rand*(1.-camDist);
+	POS4 pos=WORLDVIEW*worldPos;
+	pos=PROJ*pos;
+	#ifdef ALPHA_TEST
+		vec3 frp=fract(POSITION.xyz);
+		if((max(max(color.r,color.g),color.b)-min(min(color.r,color.g),color.b)>.01&&frp.y!=.015625)||
+			(frp.y==.9375&&(frp.x==0.||frp.z==0.))||
+			((frp.y==0.||frp.y>.5)&&(fract(frp.x*16.)!=0. && fract(frp.z*16.)!=0.)))pos.x+=wav*.016*rand*PROJ[0].x;
+	#endif
+#endif
+gl_Position=pos;
 
 #ifdef FOG
 	float len=length(-worldPos.xyz)/RENDER_DISTANCE;
@@ -61,15 +91,6 @@ gl_Position=pos;
 		len+=RENDER_CHUNK_FOG_ALPHA;
 	#endif
 	fog=clamp((len-FOG_CONTROL.x)/(FOG_CONTROL.y-FOG_CONTROL.x),0.,1.);
-#endif
-
-///// esbe water detection
-#ifndef SEASONS
-	if(color.a < 0.95 && color.a > 0.05) {
-		color=COLOR;
-		float cameraDist=length(-worldPos.xyz)/FAR_CHUNKS_DISTANCE;
-		color.a=mix(color.a,1.,clamp(cameraDist,0.,1.));
-	}
 #endif
 
 #ifndef BYPASS_PIXEL_SHADER
