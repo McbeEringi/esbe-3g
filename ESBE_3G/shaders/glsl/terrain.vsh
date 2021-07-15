@@ -46,18 +46,37 @@ highp float random(highp float p){
 
 void main(){
 POS4 worldPos;
-float camDist;
-block=0.;
-// wave
-POS3 p=vec3(POSITION.x==16.?0.:POSITION.x,abs(POSITION.y-8.),POSITION.z==16.?0.:POSITION.z);
-float wav=sin(TOTAL_REAL_WORLD_TIME*3.5-dot(p,vec3(2,1.5,1)));
-float rand=random(dot(p,vec3(1)));
-
 #ifndef BYPASS_PIXEL_SHADER
 	uv0=TEXCOORD_0;
 	uv1=TEXCOORD_1;
 	color=COLOR;
 #endif
+
+float camDist;
+block=0.;
+// wave
+POS3 p=vec3(POSITION.x==16.?0.:POSITION.x,abs(POSITION.y-8.),POSITION.z==16.?0.:POSITION.z);
+float wav=sin(TOTAL_REAL_WORLD_TIME*3.5-dot(p,vec3(2,1.5,1)));
+float rand=
+#ifdef FANCY
+	random(dot(p,vec3(1)));
+#else
+	1.;
+#endif
+float sun=mix(.5,1.,smoothstep(0.,.5,uv1.y));
+float uw=
+#ifdef FOG
+	step(FOG_CONTROL.x,0.);
+#else
+	0.;
+#endif
+float nether=
+#ifdef FOG
+	FOG_CONTROL.x/FOG_CONTROL.y;nether=step(.1,nether)-step(.12,nether);
+#else
+	0.;
+#endif
+
 
 // water
 #ifndef SEASONS
@@ -73,14 +92,14 @@ float rand=random(dot(p,vec3(1)));
 	worldPos=pos;
 #else
 	worldPos=vec4(POSITION.xyz*CHUNK_ORIGIN_AND_SCALE.w+CHUNK_ORIGIN_AND_SCALE.xyz,1);
-	if(block==1.)worldPos.y+=wav*.05*fract(POSITION.y)*rand*(1.-camDist);
+	if(block==1.)worldPos.y+=wav*.05*fract(POSITION.y)*rand*sun*(1.-camDist);
 	POS4 pos=WORLDVIEW*worldPos;
 	pos=PROJ*pos;
 	#ifdef ALPHA_TEST
 		vec3 frp=fract(POSITION.xyz);
 		if((max(max(color.r,color.g),color.b)-min(min(color.r,color.g),color.b)>.01&&frp.y!=.015625)||
 			(frp.y==.9375&&(frp.x==0.||frp.z==0.))||
-			((frp.y==0.||frp.y>.5)&&(fract(frp.x*16.)!=0. && fract(frp.z*16.)!=0.)))pos.x+=wav*.016*rand*PROJ[0].x;
+			((frp.y==0.||frp.y>.6)&&(fract(frp.x*16.)!=0. && fract(frp.z*16.)!=0.)))pos.x+=wav*.016*rand*sun*PROJ[0].x;
 	#endif
 #endif
 gl_Position=pos;
@@ -91,6 +110,8 @@ gl_Position=pos;
 		len+=RENDER_CHUNK_FOG_ALPHA;
 	#endif
 	fog=clamp((len-FOG_CONTROL.x)/(FOG_CONTROL.y-FOG_CONTROL.x),0.,1.);
+	gl_Position.xy+=wav*fog*.15*(rand*.5+.5)*nether;
+	gl_Position.x+=wav*fog*.1*rand*uw;
 #endif
 
 #ifndef BYPASS_PIXEL_SHADER
