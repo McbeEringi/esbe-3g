@@ -121,8 +121,8 @@ vec4 ambient=
 	mix(mix(vec4(1.,.98,0.96,1.1),//indoor
 	mix(vec4(.8,.86,.9,.95),//rain
 	mix(mix(vec4(.86,.8,.9,1.),//night
-	vec4(1.03,1.02,1.,1.1),//noon
-	l01),vec4(1,.7,.5,.9),//dusk
+	vec4(1.13,1.12,1.1,1.2),//noon
+	l01),vec4(1.1,.8,.5,.9),//dusk
 	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+3.)*.25,1),//from fog
 	max(uw,nether));
 
