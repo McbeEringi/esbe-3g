@@ -123,7 +123,7 @@ vec4 ambient=
 	mix(mix(vec4(.86,.8,.9,1.),//night
 	vec4(1.13,1.12,1.1,1.2),//noon
 	l01),vec4(1.1,.8,.5,.9),//dusk
-	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+3.)*.25,1),//from fog
+	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+2.)*.4,1),//from fog
 	max(uw,nether));
 
 diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-l01w)*.8,1.));
