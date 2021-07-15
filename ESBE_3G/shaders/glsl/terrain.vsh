@@ -110,8 +110,8 @@ gl_Position=pos;
 		len+=RENDER_CHUNK_FOG_ALPHA;
 	#endif
 	fog=clamp((len-FOG_CONTROL.x)/(FOG_CONTROL.y-FOG_CONTROL.x),0.,1.);
-	gl_Position.xy+=wav*fog*.15*(rand*.5+.5)*nether;
-	gl_Position.x+=wav*fog*.1*rand*uw;
+	if(nether>.5)gl_Position.xy+=wav*fog*.15*(rand*.5+.5)*nether;
+	else if(uw>.5)gl_Position.x+=wav*fog*.1*rand*uw;
 #endif
 
 #ifndef BYPASS_PIXEL_SHADER
