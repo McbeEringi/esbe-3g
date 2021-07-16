@@ -95,9 +95,9 @@ vec4 inColor=color;
 #endif
 
 //=*=*=
-float l01=linearstep(texture2D(TEXTURE_1,vec2(0)).r*3.6,1.,texture2D(TEXTURE_1,vec2(0,1)).r);
+float day=linearstep(texture2D(TEXTURE_1,vec2(0)).r*3.6,1.,texture2D(TEXTURE_1,vec2(0,1)).r);
 vec2 sun=vec2(smoothstep(.5,1.,uv1.y),smoothstep(.865,.875,uv1.y));
-float dusk=min(smoothstep(0.2,0.4,l01),smoothstep(0.8,0.6,l01));
+float dusk=min(smoothstep(0.2,0.4,day),smoothstep(0.8,0.6,day));
 float weather=
 #ifdef FOG
 	smoothstep(.3,.8,FOG_CONTROL.x);//.7,.96,FOG_CONTROL.y);
@@ -116,17 +116,17 @@ float nether=
 #else
 	0.;
 #endif
-float l01w=l01*weather;
+float dayw=day*weather;
 vec4 ambient=
 	mix(mix(vec4(1.,.98,0.96,1.1),//indoor
 	mix(vec4(.8,.86,.9,.95),//rain
 	mix(mix(vec4(.86,.8,.9,1.),//night
 	vec4(1.13,1.12,1.1,1.2),//noon
-	l01),vec4(1.1,.8,.5,.9),//dusk
+	day),vec4(1.1,.8,.5,.9),//dusk
 	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+2.)*.4,1),//from fog
 	max(uw,nether));
 
-diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-l01w)*.8,1.));
+diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-dayw)*.8,1.));
 diffuse.rgb+=uv1.x*uv1.x*vec3(1,.67,.39)*.1*(1.-sun.x);
 diffuse.rgb=tone(diffuse.rgb,ambient);
 //=*=*=
@@ -141,7 +141,7 @@ diffuse.rgb=tone(diffuse.rgb,ambient);
 	if(subdisp.x<1. && subdisp.y<1.){
 		vec3 subback=vec3(1);
 		#define sdif(S,E,Y,C) if(subdisp.x>S && subdisp.x<=E && subdisp.y<=Y)subback.rgb=C;
-		sdif(0.,.1,l01,vec3(.5))
+		sdif(0.,.1,day,vec3(.5))
 		sdif(.2,.3,FOG_CONTROL.x,vec3(.5))
 		sdif(.3,.4,FOG_CONTROL.y,vec3(.5))
 		diffuse=mix(diffuse,vec4(subback,1),.5);

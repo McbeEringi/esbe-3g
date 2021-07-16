@@ -16,7 +16,6 @@
 		"swampland":{"water_surface_color":"#4c6559","water_fog_color":"#4c6559","water_surface_transparency":0.8,"water_fog_distance":50},
 		"swampland_mutated":{"water_surface_color":"#4c6156","water_fog_color":"#4c6156","water_surface_transparency":0.8,"water_fog_distance":50},
 		"river":{"water_surface_color":"#0084FF","water_fog_color":"#0084FF","water_fog_distance":75},
-		"hell":{"water_surface_color":"#752100","water_fog_color":"#905957","water_surface_transparency":0.8,"water_fog_distance":50},
 		"the_end":{"water_surface_color":"#65318e","water_fog_color":"#65318e","water_surface_transparency":0.8,"water_fog_distance":50},
 		"frozen_river":{"water_surface_color":"#185390","water_fog_color":"#185390","water_fog_distance":75},
 		"ice_plains":{"water_surface_color":"#14559b","water_fog_color":"#14559b"},
