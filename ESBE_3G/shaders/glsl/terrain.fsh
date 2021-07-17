@@ -7,6 +7,9 @@
 #endif
 #include "fragmentVersionCentroid.h"
 #if __VERSION__ >= 300
+	#ifdef FANCY
+		#define USE_NORMAL
+	#endif
 	#ifndef BYPASS_PIXEL_SHADER
 		#if defined(TEXEL_AA) && defined(TEXEL_AA_FEATURE)
 			_centroid in highp vec2 uv0;
@@ -29,6 +32,10 @@ varying vec4 color;
 	varying float fog;
 #endif
 
+varying float block;
+varying HM vec3 wpos;
+varying HM vec3 cpos;
+
 #include "util.h"
 LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
 LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
@@ -45,6 +52,7 @@ vec3 tone(vec3 col, vec4 gs){
 	col=aces((col-lum)*gs.a+lum);
 	return col/aces(vec3(1.7));//exposure
 }
+bool is(float x,float a){return a-.05<x&&x<a+.05;}
 
 void main(){
 #ifdef BYPASS_PIXEL_SHADER
@@ -95,6 +103,9 @@ vec4 inColor=color;
 #endif
 
 //=*=*=
+#ifdef USE_NORMAL
+	vec3 n=normalize(cross(dFdx(cpos),dFdy(cpos)));
+#endif
 float day=linearstep(texture2D(TEXTURE_1,vec2(0)).r*3.6,1.,texture2D(TEXTURE_1,vec2(0,1)).r);
 vec2 sun=vec2(smoothstep(.5,1.,uv1.y),smoothstep(.865,.875,uv1.y));
 float dusk=min(smoothstep(0.2,0.4,day),smoothstep(0.8,0.6,day));
@@ -127,6 +138,20 @@ vec4 ambient=
 	max(uw,nether));
 
 diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-dayw)*.8,1.));
+// if(is(block,1.)||uw>.5){
+// 	#ifdef USE_NORMAL
+// 		float w_r=1.-dot(normalize(-wpos),n);
+// 		diffuse.a=mix(diffuse.a,1.,.02+.98*w_r*w_r*w_r*w_r*w_r);
+// 	#endif
+// }
+#ifdef USE_NORMAL
+	diffuse.rgb*=mix(1.,
+		mix(
+			dot(n,vec3(0.,.8,.6))*.4+.6,
+			max(dot(n,vec3(.9,.44,0.)),dot(n,vec3(-.9,.44,0.)))*1.3+.2,
+		dusk),
+	sun.x*min(1.25-uv1.x,1.)*dayw);
+#endif
 diffuse.rgb+=uv1.x*uv1.x*vec3(1,.67,.39)*.1*(1.-sun.x);
 diffuse.rgb=tone(diffuse.rgb,ambient);
 //=*=*=

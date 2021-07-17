@@ -27,6 +27,8 @@
 #endif
 
 varying float block;
+varying HM vec3 wpos;
+varying HM vec3 cpos;
 
 #include "uniformWorldConstants.h"
 #include "uniformPerFrameConstants.h"
@@ -77,7 +79,6 @@ float nether=
 	0.;
 #endif
 
-
 // water
 #ifndef SEASONS
 	if(color.a<.95 && color.a>.05){
@@ -103,6 +104,8 @@ float nether=
 	#endif
 #endif
 gl_Position=pos;
+wpos=worldPos.xyz;
+cpos=POSITION.xyz;
 
 #ifdef FOG
 	float len=length(-worldPos.xyz)/RENDER_DISTANCE;
