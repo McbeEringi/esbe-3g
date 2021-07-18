@@ -43,7 +43,7 @@ LAYOUT_BINDING(2) uniform sampler2D TEXTURE_2;
 uniform vec4 FOG_COLOR;
 uniform vec2 FOG_CONTROL;
 #include "snoise.h"
-#include "rnoise.h"
+#include "pnoise.h"
 
 #define linearstep(a,b,x) clamp((x-a)/(b-a),0.,1.)
 //https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
