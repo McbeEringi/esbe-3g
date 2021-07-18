@@ -42,6 +42,8 @@ LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
 LAYOUT_BINDING(2) uniform sampler2D TEXTURE_2;
 uniform vec4 FOG_COLOR;
 uniform vec2 FOG_CONTROL;
+#include "snoise.h"
+#include "rnoise.h"
 
 #define linearstep(a,b,x) clamp((x-a)/(b-a),0.,1.)
 //https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
@@ -52,7 +54,7 @@ vec3 tone(vec3 col, vec4 gs){
 	col=aces((col-lum)*gs.a+lum);
 	return col/aces(vec3(1.7));//exposure
 }
-bool is(float x,float a){return a-.05<x&&x<a+.05;}
+bool is(float x,float a){return a-.01<x&&x<a+.01;}
 
 void main(){
 #ifdef BYPASS_PIXEL_SHADER
@@ -138,12 +140,13 @@ vec4 ambient=
 	max(uw,nether));
 
 diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-dayw)*.8,1.));
-// if(is(block,1.)||uw>.5){
+if(is(block,1.)||uw>.5){
+	diffuse.rgb=vec3(rnoise(cpos.xz,16.,.0625)*.5+.5);
 // 	#ifdef USE_NORMAL
 // 		float w_r=1.-dot(normalize(-wpos),n);
 // 		diffuse.a=mix(diffuse.a,1.,.02+.98*w_r*w_r*w_r*w_r*w_r);
 // 	#endif
-// }
+}
 #ifdef USE_NORMAL
 	diffuse.rgb*=mix(1.,
 		mix(

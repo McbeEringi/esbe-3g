@@ -57,7 +57,8 @@ POS4 worldPos;
 float camDist;
 block=0.;
 // wave
-POS3 p=vec3(POSITION.x==16.?0.:POSITION.x,abs(POSITION.y-8.),POSITION.z==16.?0.:POSITION.z);
+POS3 p=fract(POSITION.xyz*.0625)*16.;
+vec3 frp=fract(POSITION.xyz);
 float wav=sin(TOTAL_REAL_WORLD_TIME*3.5-dot(p,vec3(2,1.5,1)));
 float rand=
 #ifdef FANCY
@@ -94,10 +95,13 @@ float nether=
 #else
 	worldPos=vec4(POSITION.xyz*CHUNK_ORIGIN_AND_SCALE.w+CHUNK_ORIGIN_AND_SCALE.xyz,1);
 	if(block==1.)worldPos.y+=wav*.05*fract(POSITION.y)*rand*sun*(1.-camDist);
+	#ifdef BLEND
+		if(abs(frp.x-.5)==.125)worldPos.x+=wav*.05*rand;
+		else if(abs(frp.z-.5)==.125)worldPos.z+=wav*.05*rand;
+	#endif
 	POS4 pos=WORLDVIEW*worldPos;
 	pos=PROJ*pos;
 	#ifdef ALPHA_TEST
-		vec3 frp=fract(POSITION.xyz);
 		if((max(max(color.r,color.g),color.b)-min(min(color.r,color.g),color.b)>.01&&frp.y!=.015625)||
 			(frp.y==.9375&&(frp.x==0.||frp.z==0.))||
 			((frp.y==0.||frp.y>.6)&&(fract(frp.x*16.)!=0. && fract(frp.z*16.)!=0.)))pos.x+=wav*.016*rand*sun*PROJ[0].x;
