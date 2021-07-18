@@ -141,7 +141,7 @@ vec4 ambient=
 
 diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-dayw)*.8,1.));
 if(is(block,1.)||uw>.5){
-	diffuse.rgb=vec3(rnoise(cpos.xz,16.,.0625)*.5+.5);
+	diffuse.rgb=vec3(pnoise(cpos.xz,16.,.0625)*.5+.5);
 // 	#ifdef USE_NORMAL
 // 		float w_r=1.-dot(normalize(-wpos),n);
 // 		diffuse.a=mix(diffuse.a,1.,.02+.98*w_r*w_r*w_r*w_r*w_r);
