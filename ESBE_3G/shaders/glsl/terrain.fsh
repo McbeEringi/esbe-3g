@@ -42,6 +42,7 @@ LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
 LAYOUT_BINDING(2) uniform sampler2D TEXTURE_2;
 uniform vec4 FOG_COLOR;
 uniform vec2 FOG_CONTROL;
+uniform HM float TOTAL_REAL_WORLD_TIME;
 #include "snoise.h"
 #include "pnoise.h"
 
@@ -55,6 +56,26 @@ vec3 tone(vec3 col, vec4 gs){
 	return col/aces(vec3(1.7));//exposure
 }
 bool is(float x,float a){return a-.01<x&&x<a+.01;}
+HM float cmap(HM vec2 p){
+	HM vec2 t=vec2(-TOTAL_REAL_WORLD_TIME,64);
+	return dot(vec2(snoise(p*4.+t*.01),snoise(p*16.+t*.1)),vec2(1,.1));
+}
+HM vec4 water(HM vec4 col,float uw,float sun,float day,HM vec3 n){
+	HM float t=TOTAL_REAL_WORLD_TIME;
+	HM vec2 p=cpos.xz+smoothstep(0.,8.,abs(cpos.y-8.));
+	p.x*=2.;
+	float h=pnoise(p+t*vec2(-.8,.8),16.,.0625)+pnoise(p*1.25+t*vec2(-.8,-1.6),20.,.05);
+	float cost=abs(dot(normalize(wpos),n));
+	vec4 diffuse=col*mix(1.,mix(1.4,1.6,uw),pow(1.-abs(h)*.5,mix(1.5,2.5,uw)));
+	if(!bool(uw)){
+		HM vec3 rpos=reflect(wpos,n);
+		HM vec2 spos=(rpos.xz+h*rpos.xz/max(length(rpos.xz),.5)*4.)/rpos.y;
+		HM vec2 srad=normalize(vec2(length(spos),1));
+		vec4 scol=mix(mix(vec4(FOG_COLOR.rgb,1),col,srad.y),vec4((vec3(mix(.2,1.,day))+FOG_COLOR.rgb)*.5,1),smoothstep(.3,.9,cmap(spos*.04))*step(0.,rpos.y));
+		diffuse=mix(diffuse,mix(scol,col,cost),sun);
+	}
+	return diffuse;
+}
 
 void main(){
 #ifdef BYPASS_PIXEL_SHADER
@@ -140,13 +161,14 @@ vec4 ambient=
 	max(uw,nether));
 
 diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-dayw)*.8,1.));
-if(is(block,1.)||uw>.5){
-	diffuse.rgb=vec3(pnoise(cpos.xz,16.,.0625)*.5+.5);
-// 	#ifdef USE_NORMAL
-// 		float w_r=1.-dot(normalize(-wpos),n);
-// 		diffuse.a=mix(diffuse.a,1.,.02+.98*w_r*w_r*w_r*w_r*w_r);
-// 	#endif
-}
+if(is(block,1.)||uw>.5)
+	diffuse=water(diffuse,uw,sun.x,day,
+	#ifdef USE_NORMAL
+		n
+	#else
+		vec3(0,1,0)
+	#endif
+	);
 #ifdef USE_NORMAL
 	diffuse.rgb*=mix(1.,
 		mix(
