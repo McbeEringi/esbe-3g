@@ -62,19 +62,18 @@ HM float cmap(HM vec2 p){
 }
 HM vec4 water(HM vec4 col,float uw,float sun,float day,HM vec3 n){
 	HM float t=TOTAL_REAL_WORLD_TIME;
-	HM vec2 p=cpos.xz+smoothstep(0.,8.,abs(cpos.y-8.));
-	p.x*=2.;
+	HM vec2 p=cpos.xz+smoothstep(0.,8.,abs(cpos.y-8.))*.5;p.x*=2.;
 	float h=pnoise(p+t*vec2(-.8,.8),16.,.0625)+pnoise(p*1.25+t*vec2(-.8,-1.6),20.,.05);
 	float cost=abs(dot(normalize(wpos),n));
-	vec4 diffuse=col*mix(1.,mix(1.4,1.6,uw),pow(1.-abs(h)*.5,mix(1.5,2.5,uw)));
+	vec4 col_=col*mix(1.,mix(1.4,1.6,uw),pow(1.-abs(h)*.5,mix(1.5,2.5,uw)));
 	if(!bool(uw)){
 		HM vec3 rpos=reflect(wpos,n);
 		HM vec2 spos=(rpos.xz+h*rpos.xz/max(length(rpos.xz),.5)*4.)/rpos.y;
 		HM vec2 srad=normalize(vec2(length(spos),1));
 		vec4 scol=mix(mix(vec4(FOG_COLOR.rgb,1),col,srad.y),vec4((vec3(mix(.2,1.,day))+FOG_COLOR.rgb)*.5,1),smoothstep(.3,.9,cmap(spos*.04))*step(0.,rpos.y));
-		diffuse=mix(diffuse,mix(scol,col,cost),sun);
+		col_=mix(col_,mix(scol,col,cost),sun);
 	}
-	return diffuse;
+	return col_;
 }
 
 void main(){
