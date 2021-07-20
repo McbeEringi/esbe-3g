@@ -71,8 +71,10 @@ HM vec4 water(HM vec4 col,float weather,float uw,float sun,float day,HM vec3 n){
 		HM vec2 spos=(rpos.xz+h*rpos.xz/max(length(rpos.xz),.5)*4.)/rpos.y;
 		HM vec2 srad=normalize(vec2(length(spos),1));
 		vec4 scol=mix(mix(vec4(FOG_COLOR.rgb,1),col,srad.y),vec4((vec3(mix(.2,1.,day))+FOG_COLOR.rgb)*.5,1),smoothstep(mix(-.6,.3,weather),.9,cmap(spos*.04))*step(0.,rpos.y));
-		scol.a=mix(0.,scol.a,step(0.,cost));//cull
-		col_=mix(col_,mix(scol,col,min(.7,cost)),sun);
+		#ifdef USE_NORMAL
+			scol.a=mix(0.,scol.a,step(0.,cost));//ScreenSpaceNormalCalc fix
+		#endif
+		col_=mix(col_,mix(scol,col,clamp(cost,.0,.7)),sun);
 	}
 	return col_;
 }

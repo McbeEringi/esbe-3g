@@ -96,8 +96,8 @@ float nether=
 	worldPos=vec4(POSITION.xyz*CHUNK_ORIGIN_AND_SCALE.w+CHUNK_ORIGIN_AND_SCALE.xyz,1);
 	if(block==1.)worldPos.y+=wav*.05*fract(POSITION.y)*rand*sun*(1.-camDist);
 	#ifdef BLEND
-		if(abs(frp.x-.5)==.125)worldPos.x+=wav*.05*rand;
-		else if(abs(frp.z-.5)==.125)worldPos.z+=wav*.05*rand;
+		if(abs(frp.x-.5)==.125 && frp.z==0.)worldPos.x+=wav*.05*rand;
+		else if(abs(frp.z-.5)==.125 && frp.x==0.)worldPos.z+=wav*.05*rand;
 	#endif
 	POS4 pos=WORLDVIEW*worldPos;
 	pos=PROJ*pos;
