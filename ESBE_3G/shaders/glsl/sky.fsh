@@ -43,13 +43,12 @@ if(aflag>0.){
 }
 //CLOUDS
 vec3 ccol=mix(mix(vec3(.2),//night rain
-	vec3(.9),//day rain
+	vec3(.8),//day rain
 	day),mix(mix(vec3(.1,.18,.38),//night
 	vec3(.97,.96,.90),//day
 	day),vec3(.97,.72,.38),//dusk
 	dusk),weather);
-float lb = mix(.1,.5,weather);
-col.rgb=mix(col.rgb,ccol,smoothstep(.3,.9,cmap(pos))*smoothstep(.6,.3,l));
+col.rgb=mix(col.rgb,ccol,smoothstep(mix(-.6,.3,weather),.9,cmap(pos))*smoothstep(.6,.3,l));
 
 gl_FragColor=mix(col,FOG_COLOR,fog);
 
