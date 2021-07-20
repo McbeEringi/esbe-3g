@@ -47,6 +47,7 @@ uniform HM float TOTAL_REAL_WORLD_TIME;
 #include "pnoise.h"
 
 #define linearstep(a,b,x) clamp((x-a)/(b-a),0.,1.)
+bool is(float x,float a){return a-.01<x&&x<a+.01;}
 //https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
 vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}
 vec3 tone(vec3 col, vec4 gs){
@@ -55,7 +56,6 @@ vec3 tone(vec3 col, vec4 gs){
 	col=aces((col-lum)*gs.a+lum);
 	return col/aces(vec3(1.7));//exposure
 }
-bool is(float x,float a){return a-.01<x&&x<a+.01;}
 HM float cmap(HM vec2 p){
 	HM vec2 t=vec2(-TOTAL_REAL_WORLD_TIME,64);
 	return dot(vec2(snoise(p*4.+t*.01),snoise(p*16.+t*.1)),vec2(1,.1));
@@ -64,7 +64,7 @@ HM vec4 water(HM vec4 col,float weather,float uw,float sun,float day,HM vec3 n){
 	HM float t=TOTAL_REAL_WORLD_TIME;
 	HM vec2 p=cpos.xz+smoothstep(0.,8.,abs(cpos.y-8.))*.5;p.x*=2.;
 	float h=pnoise(p+t*vec2(-.8,.8),16.,.0625)+pnoise(p*1.25+t*vec2(-.8,-1.6),20.,.05);
-	float cost=dot(normalize(wpos),n);
+	float cost=dot(normalize(-wpos),n);
 	vec4 col_=col*mix(1.,mix(1.4,1.6,uw),pow(1.-abs(h)*.5,mix(1.5,2.5,uw)));
 	if(!bool(uw)){
 		HM vec3 rpos=reflect(wpos,n);
