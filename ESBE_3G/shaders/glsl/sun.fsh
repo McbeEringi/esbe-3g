@@ -40,7 +40,7 @@ if(col.r*col.a<.05){//DEFAULT
 		float mp=(floor(uv.x*4.)*.25+step(uv.y,.5))*3.1415926536;//[0~2pi]
 		float r=.13;
 		vec3 n=normalize(vec3(rpos,sqrt(r*r-l*l)));
-		vec2 np=vec2(-atan(n.x,n.z),asin(n.y));
+		vec2 np=vec2(-atan(n.x,n.z),asin(n.y))*.6366197724;// 2/pi [0~1]
 		float s=smoothstep(-.3,.5,dot(-vec3(sin(mp),0.,cos(mp)),n))*smoothstep(r,r*.9,l);
 		s=max(s,cos(min(l*2.,1.58))*sin(mp*.5)*.6);
 		col=texture2D(TEXTURE_0,np*.5+.5)*s;
