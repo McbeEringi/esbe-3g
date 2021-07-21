@@ -5,11 +5,12 @@
 #else
 	#define HM mediump
 #endif
-#include "vertexVersionCentroidUV.h"
+#include "vertexVersionCentroid.h"
 attribute POS4 POSITION;
 attribute vec2 TEXCOORD_0;
 uniform MAT4 WORLDVIEWPROJ;
 uniform MAT4 WORLDVIEW;
+_centroid varying HM vec2 uv;
 varying HM vec2 rpos;
 varying HM vec2 pos;
 void main(){
@@ -17,8 +18,7 @@ void main(){
 POS4 p=POSITION*vec2(10.,1.).xyxy;
 gl_Position=WORLDVIEWPROJ*p;
 uv=TEXCOORD_0;
-rpos=mat2(.8,.6,-.6,.8)*p.xz;
+rpos=mat2(.6,-.8,.8,.6)*p.xz;
 pos=p.xz;
-//lf=vec4(p.xz,(WORLDVIEW*p).xy);
 
 }
