@@ -48,14 +48,12 @@ highp float random(highp float p){
 
 void main(){
 POS4 worldPos;
+block=0.;
 #ifndef BYPASS_PIXEL_SHADER
 	uv0=TEXCOORD_0;
 	uv1=TEXCOORD_1;
 	color=COLOR;
 #endif
-
-float camDist;
-block=0.;
 // wave
 POS3 p=fract(POSITION.xyz*.0625)*16.;
 vec3 frp=fract(POSITION.xyz);
@@ -82,11 +80,7 @@ float nether=
 
 // water
 #ifndef SEASONS
-	if(color.a<.95 && color.a>.05){
-		block=1.;
-		camDist=clamp(length(-worldPos.xyz)/FAR_CHUNKS_DISTANCE,0.,1.);
-		color.a=mix(color.a,1.,camDist);
-	}
+	if(color.a<.95 && color.a>.05)block=1.;
 #endif
 
 #ifdef AS_ENTITY_RENDERER
@@ -94,11 +88,14 @@ float nether=
 	worldPos=pos;
 #else
 	worldPos=vec4(POSITION.xyz*CHUNK_ORIGIN_AND_SCALE.w+CHUNK_ORIGIN_AND_SCALE.xyz,1);
-	//if(block==1.)worldPos.y+=wav*.05*fract(POSITION.y)*rand*sun*(1.-camDist);
+	float camDist=1.;
 	#ifdef BLEND
+		camDist=clamp(length(-worldPos.xyz)/FAR_CHUNKS_DISTANCE,0.,1.);
+		color.a=mix(color.a,1.,camDist);
 		if(abs(frp.x-.5)==.125 && frp.z==0.)worldPos.x+=wav*.05*rand;
 		else if(abs(frp.z-.5)==.125 && frp.x==0.)worldPos.z+=wav*.05*rand;
 	#endif
+	if(block==1.)worldPos.y+=wav*.05*fract(POSITION.y)*rand*sun*(1.-camDist);
 	POS4 pos=WORLDVIEW*worldPos;
 	pos=PROJ*pos;
 	#ifdef ALPHA_TEST
