@@ -17,12 +17,15 @@
 		<script src="https://mcbeeringi.github.io/src/solo_style_.js" async></script>
 	</head>
 	<body>
+		<style>
+			th,td{box-sizing:border-box;padding:4px;background-color:#0002;}th{background-color:#0004;}
+		</style>
 		<h1 class="c title">ESBE 3G</h1>
 		<div class="box">
 			<div class="swiper-container">
 				<div class="swiper-wrapper">
 					<div class="swiper-slide" data-img="esbe3g.png"></div>
-					<div class="swiper-slide" data-img="soon.jpg"></div>
+					<div class="swiper-slide" data-img="1.0/0.jpg"></div>
 				</div>
 				<div class="swiper-pagination"></div>
 				<div class="swiper-button-next"></div>
@@ -34,7 +37,6 @@
 			幅広いサポートを持った<br>
 			シェーダー"ESBE_2G"の後継
 		</div>
-		<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 		<h2>ESBE 3G v1.0</h2>
 		<h3>Features</h3>
 		<ul>
@@ -45,14 +47,23 @@
 			<li>新しい水面反射</li>
 			<li>and some more…</li>
 		</ul>
+		<h3>Comparations</h3>
+		<table>
+			<tr><td></td><th>ESBE_2G</th><th>ESBE_3G</th></tr>
+			<tr><th>乱数使用回数(夜空 晴天)</th><td>42回</td><td>15回</td></tr>
+			<tr><th>乱数使用回数(水面)</th><td>9回</td><td>14回</td></tr>
+			<tr><th>トーンマップ</th><td>ガンマ補正+トーンカーブ</td><td>ガンマ補正+彩度補正+トーンカーブ</td></tr>
+			<tr><th>揺れるブロック</th><td>草 葉 サトウキビ 作物</td><td>2G+花 キノコ ネザー系草 ベリー系　etc…</td></tr>
+			<tr><th>水面反射</th><td>軽量 汎用的な計算 チャンクの境が出る</td><td>2G由来の軽量化+忠実な計算　チャンクの境が出ない</td></tr>
+			<!--<tr><th>水たまり</th><td>なし</td><td>あり</td></tr>-->
+			<tr><th>動作環境</th><td>モバイル端末とwin10</td><td>モバイル端末のみ</td></tr>
+		</table>
 		<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 		<h3>Changes</h3>
-		2021/7/20 20:00<br>
+		2021/7/20 0:00<br>
 		<ul>
 			<li>開発再開に伴い全て一から作り直しました</li>
-			<li>win10版では動作しません</li>
 		</ul>
-		<!-- hor_ad --><ins class="adsbygoogle"style="display:block"data-ad-client="ca-pub-6462086334272944"data-ad-slot="5283762489"data-ad-format="auto"data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
 		<div class="c box">
 			Published under MITlicense<br>
 			See '<a href="https://github.com/McbeEringi/esbe-3g/blob/master/LICENSE" target="_blank">LICENSE</a>'
