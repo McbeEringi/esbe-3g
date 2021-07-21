@@ -48,6 +48,7 @@ uniform HM float TOTAL_REAL_WORLD_TIME;
 
 #define linearstep(a,b,x) clamp((x-a)/(b-a),0.,1.)
 bool is(float x,float a){return a-.01<x&&x<a+.01;}
+float pow5(float x){return x*x*x*x*x;}
 //https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
 vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}
 vec3 tone(vec3 col, vec4 gs){
@@ -171,6 +172,9 @@ if(is(block,1.)||uw>.5)
 		vec3(0,1,0)
 	#endif
 	);
+#ifdef USE_NORMAL
+	else if(uw<.5)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,n.y)*pow5(1.-dot(normalize(-wpos),n))*sun.x*day*(pnoise(cpos.xz,16.,.0625)*.2+.8));
+#endif
 #ifdef USE_NORMAL
 	diffuse.rgb*=mix(1.,
 		mix(
