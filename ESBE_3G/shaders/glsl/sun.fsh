@@ -14,23 +14,38 @@
 #endif
 LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
 uniform vec2 FOG_CONTROL;
+uniform vec4 CURRENT_COLOR;
+varying HM vec2 rpos;
 varying HM vec2 pos;
-//varying vec4 lf;
 void main(){
 
-float l=length(pos);
-float s;
-if(texture2D(TEXTURE_0,vec2(.5)).r>.05)
-	s = max(cos(min(l*12.,1.58)),(.5-l*.7)/*(snoise(vec2(atan(pos.x,pos.y)*2.,TIME*.5))*.1+.9)*/);
-else{
-	float mp = (floor(uv.x*4.)*.25+step(uv.y,.5))*3.1415;//[0~2pi]
-	float r =.13;//月半径 ~0.5
-	vec3 n = normalize(vec3(pos,sqrt(r*r-l*l)));
-	s = smoothstep(-.3,.5,dot(-vec3(sin(mp),0.,cos(mp)),n));
-	s *= smoothstep(r,r-r*.05,l);
-	s *= 1.-smoothstep(1.5,0.,snoise(pos+n.xy+5.)*.5+snoise((pos+n.xy)*3.)*.25+.75)*.15;
-	s = max(s,cos(min(l*2.,1.58))*sin(mp*.5)*.6);//拡散光
+vec4 col=texture2D(TEXTURE_0,vec2(0));
+float weather=smoothstep(.3,.8,FOG_CONTROL.x);
+if(col.r*col.a<.05){//DEFAULT
+	if(max(abs(pos.x),abs(pos.y))>.5)discard;
+	vec2 uv_=mix(vec2(floor(uv.x*4.)*.25+.125,floor(uv.y*2.)*.5+.25),vec2(.5),step(.5,texture2D(TEXTURE_0,vec2(.5)).r));
+	uv_=(uv-uv_)*10.+uv_;
+	col=
+	#if !defined(TEXEL_AA) || !defined(TEXEL_AA_FEATURE)
+		texture2D(TEXTURE_0,uv_)
+	#else
+		texture2D_AA(TEXTURE_0,uv_)
+	#endif
+	*CURRENT_COLOR;
+}else{//ESBE_3G
+	float l=length(rpos);
+	if(col.r>.95)
+		col=max(cos(min(l*12.,1.58)),(.5-l*.7))*vec4(1.,.95,.81,weather);
+	else{
+		float mp=(floor(uv.x*4.)*.25+step(uv.y,.5))*3.1415926536;//[0~2pi]
+		float r=.13;
+		vec3 n=normalize(vec3(rpos,sqrt(r*r-l*l)));
+		float s=smoothstep(-.3,.5,dot(-vec3(sin(mp),0.,cos(mp)),n))*smoothstep(r,r*.9,l);
+		// tex
+		s=max(s,cos(min(l*2.,1.58))*sin(mp*.5)*.6);
+		col=vec4(1)*s;
+	}
 }
-gl_FragColor=vec4(1.,.95,.81,smoothstep(.3,.8,FOG_CONTROL.x))*s;
+gl_FragColor=col;
 
 }

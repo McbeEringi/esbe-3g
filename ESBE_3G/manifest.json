@@ -11,9 +11,5 @@
  "type":"resources",
  "uuid":"FC4050EE-8F77-4D84-A4EC-63B9B295C214",
  "version":[0,1,1]
- }],
- "subpacks":[
- {"folder_name":"tex","name":"Sun / Moon: Texture","memory_tier":1},
- {"folder_name":"code","name":"Sun / Moon: Code generated","memory_tier":2}
- ]
+ }]
 }

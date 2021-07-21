@@ -1,6 +1,6 @@
 esbe.v=v1.1
 esbe.c0=Added shading for entity
-esbe.c1=Added shading for sun & moon and its config
+esbe.c1=Added shading for sun & moon(auto switch to texture mode)
 esbe.c2=Added wet effect
 esbe.c3=Improved clouds when its rain
 esbe.c4=Improved reflection on water
