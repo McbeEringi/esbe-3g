@@ -99,9 +99,10 @@ float nether=
 	POS4 pos=WORLDVIEW*worldPos;
 	pos=PROJ*pos;
 	#ifdef ALPHA_TEST
+		vec2 hgd=abs(fract(frp.xz*16.)-.5);
 		if((max(max(color.r,color.g),color.b)-min(min(color.r,color.g),color.b)>.01&&frp.y!=.015625)||
 			(frp.y==.9375&&(frp.x==0.||frp.z==0.))||
-			((frp.y==0.||frp.y>.6)&&(fract(frp.x*16.)!=0. && fract(frp.z*16.)!=0.)))pos.x+=wav*.016*rand*sun*PROJ[0].x;
+			((frp.y==0.||frp.y>.6)&&hgd.x<.48&&hgd.y<.48))pos.x+=wav*.016*rand*sun*PROJ[0].x;
 	#endif
 #endif
 gl_Position=pos;
