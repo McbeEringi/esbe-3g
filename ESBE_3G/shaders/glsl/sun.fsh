@@ -35,7 +35,7 @@ if(col.r*col.a<.05){//DEFAULT
 	float l=length(rpos);
 	float weather=smoothstep(.3,.8,FOG_CONTROL.x);
 	if(col.r>.95)
-		col=max(cos(min(l*12.,1.58)),(.5-l*.7))*vec4(1.,.95,.81,1);
+		col=vec4(max(cos(min(l*12.,1.58)),(.5-l*.7)));
 	else{
 		float mp=(floor(uv.x*4.)*.25+step(uv.y,.5))*3.1415926536;//[0~2pi]
 		float r=.13;
@@ -48,6 +48,7 @@ if(col.r*col.a<.05){//DEFAULT
 			smoothstep(-.3,.5,dot(-vec3(sin(mp),0.,cos(mp)),n))*smoothstep(r,r*.9,l)
 		);
 	}
+	col*=vec4(1.,.95,.81,1);
 }
 gl_FragColor=col*CURRENT_COLOR;
 

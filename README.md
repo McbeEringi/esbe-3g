@@ -12,4 +12,4 @@ Published under MITlicense
 See '[LICENSE](https://github.com/McbeEringi/esbe-3g/blob/master/LICENSE)'  
 # Photos
 v1.0  
-![img](docs/1.0/0.jpg)
+![img](docs/photo/1.0-0.jpg)
