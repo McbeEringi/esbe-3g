@@ -22,7 +22,7 @@ HM float cmap(HM vec2 p){
 void main(){
 
 float day=smoothstep(0.15,0.25,FOG_COLOR.g);
-float weather=smoothstep(0.8,1.0,FOG_CONTROL.y);
+float weather=smoothstep(.3,.8,FOG_CONTROL.x);
 float dusk=clamp(FOG_COLOR.r-FOG_COLOR.g,0.,.5)*2.;
 //bool uw=FOG_CONTROL.x==0.;
 float l=length(pos);

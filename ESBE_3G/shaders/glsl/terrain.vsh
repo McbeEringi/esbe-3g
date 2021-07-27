@@ -1,24 +1,9 @@
 // __multiversion__
 // This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-	#define HM highp
-#else
-	#define HM mediump
-#endif
 #include "vertexVersionCentroid.h"
-#if __VERSION__ >= 300
-	#ifndef BYPASS_PIXEL_SHADER
-		_centroid out vec2 uv0;
-		_centroid out vec2 uv1;
-	#endif
-#else
-	#ifndef BYPASS_PIXEL_SHADER
-		varying vec2 uv0;
-		varying vec2 uv1;
-	#endif
-#endif
-
 #ifndef BYPASS_PIXEL_SHADER
+	_centroid varying vec2 uv0;
+	_centroid varying vec2 uv1;
 	varying vec4 color;
 #endif
 
@@ -27,8 +12,8 @@
 #endif
 
 varying float block;
-varying HM vec3 wpos;
-varying HM vec3 cpos;
+varying vec3 wpos;
+varying vec3 cpos;
 
 #include "uniformWorldConstants.h"
 #include "uniformPerFrameConstants.h"
