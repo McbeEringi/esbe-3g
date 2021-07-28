@@ -113,6 +113,7 @@ vec4 ambient=
 	day),vec4(1.1,.8,.5,.9),//dusk
 	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+2.)*.4,1),//from fog
 	max(uw,nether));
+vec2 uv1_=vec2(max(uv1.x-sun.x*dayw,0.),uv1.y);
 //=*=*=
 
 #if USE_TEXEL_AA
@@ -142,7 +143,7 @@ vec4 inColor=color;
 #endif
 
 #ifndef ALWAYS_LIT
-	diffuse*=texture2D(TEXTURE_1,uv1);
+	diffuse*=texture2D(TEXTURE_1,uv1_);
 #endif
 
 #ifndef SEASONS
@@ -158,13 +159,13 @@ vec4 inColor=color;
 #endif
 
 //=*=*=
-diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-dayw)*.8,1.));//shadow
+diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1_.x*uv1_.x-sun.y,0.)+(1.-dayw)*.8,1.));//shadow
 if(is(block,1.)||uw>.5)diffuse=water(diffuse,weather,uw,sun.x,day,n);//water
 #ifdef USE_NORMAL
 	else if(uw<.5)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,n.y)*pow5(1.-dot(normalize(-wpos),n))*sun.x*day*(pnoise(cpos.xz,16.,.0625)*.2+.8));//wet
-	diffuse.rgb*=mix(1.,mix(dot(n,vec3(0.,.8,.6))*.4+.6,max(dot(n,vec3(.9,.44,0.)),dot(n,vec3(-.9,.44,0.)))*1.3+.2,dusk),sun.x*min(1.25-uv1.x,1.)*dayw);//flatShading
+	diffuse.rgb*=mix(1.,mix(dot(n,vec3(0.,.8,.6))*.4+.6,max(dot(n,vec3(.9,.44,0.)),dot(n,vec3(-.9,.44,0.)))*1.3+.2,dusk),sun.x*min(1.25-uv1_.x,1.)*dayw);//flatShading
 #endif
-diffuse.rgb+=uv1.x*uv1.x*vec3(1,.67,.39)*.1*(1.-sun.x);//light
+diffuse.rgb+=uv1_.x*uv1_.x*vec3(1,.67,.39)*.1*(1.-sun.x);//light
 diffuse.rgb=tone(diffuse.rgb,ambient);//tonemap
 //=*=*=
 
