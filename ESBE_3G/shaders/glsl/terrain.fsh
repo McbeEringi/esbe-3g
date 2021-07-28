@@ -76,6 +76,45 @@ void main(){
 	return;
 #else
 
+//=*=*=
+vec3 n=
+#ifdef USE_NORMAL
+	normalize(cross(dFdx(cpos),dFdy(cpos)));
+#else
+	vec3(0,1,0);
+#endif
+float day=linearstep(texture2D(TEXTURE_1,vec2(0)).r*3.6,1.,texture2D(TEXTURE_1,vec2(0,1)).r);
+vec2 sun=smoothstep(vec2(.5,.865),vec2(1.,.875),uv1.yy);
+float dusk=min(smoothstep(0.2,0.4,day),smoothstep(0.8,0.6,day));
+float weather=
+#ifdef FOG
+	smoothstep(.3,.8,FOG_CONTROL.x);//.7,.96,FOG_CONTROL.y);
+#else
+	1.;
+#endif
+float uw=
+#ifdef FOG
+	step(FOG_CONTROL.x,0.);
+#else
+	0.;
+#endif
+float nether=
+#ifdef FOG
+	FOG_CONTROL.x/FOG_CONTROL.y;nether=step(.1,nether)-step(.12,nether);
+#else
+	0.;
+#endif
+float dayw=day*weather;
+vec4 ambient=
+	mix(mix(vec4(1.,.98,0.96,1.1),//indoor
+	mix(vec4(.8,.86,.9,.95),//rain
+	mix(mix(vec4(.86,.8,.9,1.),//night
+	vec4(1.13,1.12,1.1,1.2),//noon
+	day),vec4(1.1,.8,.5,.9),//dusk
+	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+2.)*.4,1),//from fog
+	max(uw,nether));
+//=*=*=
+
 #if USE_TEXEL_AA
 	vec4 diffuse=texture2D_AA(TEXTURE_0,uv0);
 #else
@@ -119,62 +158,14 @@ vec4 inColor=color;
 #endif
 
 //=*=*=
+diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-dayw)*.8,1.));//shadow
+if(is(block,1.)||uw>.5)diffuse=water(diffuse,weather,uw,sun.x,day,n);//water
 #ifdef USE_NORMAL
-	vec3 n=normalize(cross(dFdx(cpos),dFdy(cpos)));
+	else if(uw<.5)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,n.y)*pow5(1.-dot(normalize(-wpos),n))*sun.x*day*(pnoise(cpos.xz,16.,.0625)*.2+.8));//wet
+	diffuse.rgb*=mix(1.,mix(dot(n,vec3(0.,.8,.6))*.4+.6,max(dot(n,vec3(.9,.44,0.)),dot(n,vec3(-.9,.44,0.)))*1.3+.2,dusk),sun.x*min(1.25-uv1.x,1.)*dayw);//flatShading
 #endif
-float day=linearstep(texture2D(TEXTURE_1,vec2(0)).r*3.6,1.,texture2D(TEXTURE_1,vec2(0,1)).r);
-vec2 sun=vec2(smoothstep(.5,1.,uv1.y),smoothstep(.865,.875,uv1.y));
-float dusk=min(smoothstep(0.2,0.4,day),smoothstep(0.8,0.6,day));
-float weather=
-#ifdef FOG
-	smoothstep(.3,.8,FOG_CONTROL.x);//.7,.96,FOG_CONTROL.y);
-#else
-	1.;
-#endif
-float uw=
-#ifdef FOG
-	step(FOG_CONTROL.x,0.);
-#else
-	0.;
-#endif
-float nether=
-#ifdef FOG
-	FOG_CONTROL.x/FOG_CONTROL.y;nether=step(.1,nether)-step(.12,nether);
-#else
-	0.;
-#endif
-float dayw=day*weather;
-vec4 ambient=
-	mix(mix(vec4(1.,.98,0.96,1.1),//indoor
-	mix(vec4(.8,.86,.9,.95),//rain
-	mix(mix(vec4(.86,.8,.9,1.),//night
-	vec4(1.13,1.12,1.1,1.2),//noon
-	day),vec4(1.1,.8,.5,.9),//dusk
-	dusk),weather),sun.x),vec4((FOG_COLOR.rgb+2.)*.4,1),//from fog
-	max(uw,nether));
-
-diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1.x*uv1.x-sun.y,0.)+(1.-dayw)*.8,1.));
-if(is(block,1.)||uw>.5)
-	diffuse=water(diffuse,weather,uw,sun.x,day,
-	#ifdef USE_NORMAL
-		n
-	#else
-		vec3(0,1,0)
-	#endif
-	);
-#ifdef USE_NORMAL
-	else if(uw<.5)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,n.y)*pow5(1.-dot(normalize(-wpos),n))*sun.x*day*(pnoise(cpos.xz,16.,.0625)*.2+.8));
-#endif
-#ifdef USE_NORMAL
-	diffuse.rgb*=mix(1.,
-		mix(
-			dot(n,vec3(0.,.8,.6))*.4+.6,
-			max(dot(n,vec3(.9,.44,0.)),dot(n,vec3(-.9,.44,0.)))*1.3+.2,
-		dusk),
-	sun.x*min(1.25-uv1.x,1.)*dayw);
-#endif
-diffuse.rgb+=uv1.x*uv1.x*vec3(1,.67,.39)*.1*(1.-sun.x);
-diffuse.rgb=tone(diffuse.rgb,ambient);
+diffuse.rgb+=uv1.x*uv1.x*vec3(1,.67,.39)*.1*(1.-sun.x);//light
+diffuse.rgb=tone(diffuse.rgb,ambient);//tonemap
 //=*=*=
 
 #ifdef FOG
