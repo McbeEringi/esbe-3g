@@ -1,9 +1,9 @@
 esbe.v=v2.1
-esbe.c0=Improved daytime lighting
-esbe.c1=Improved water
-esbe.c2=Fixed a bug sky looks rainy in unexpected situation
-esbe.c3=
-esbe.c4=
+esbe.c0=Added shadow at block side
+esbe.c1=Improved daytime lighting
+esbe.c2=Improved water
+esbe.c3=Fixed a bug sky looks rainy in unexpected situation
+esbe.c4=Fixed a sky bug in The End
 esbe.c5=
 esbe.c6=
 esbe.c7=

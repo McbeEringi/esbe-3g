@@ -85,6 +85,8 @@ vec3 n=
 #endif
 float day=linearstep(texture2D(TEXTURE_1,vec2(0)).r*3.6,1.,texture2D(TEXTURE_1,vec2(0,1)).r);
 vec2 sun=smoothstep(vec2(.5,.865),vec2(1.,.875),uv1.yy);
+float ao=linearstep(.2,.8,day);
+ao=mix(1.,smoothstep(mix(.6,.48,ao),mix(.7,.52,ao),color.g),step(max(max(color.r,color.g),color.b)-min(min(color.r,color.g),color.b),0.));
 float dusk=min(smoothstep(0.2,0.4,day),smoothstep(0.8,0.6,day));
 float weather=
 #ifdef FOG
@@ -159,7 +161,7 @@ vec4 inColor=color;
 #endif
 
 //=*=*=
-diffuse.rgb*=mix(.5,1.,min(sun.y+max(uv1_.x*uv1_.x-sun.y,0.)+(1.-dayw)*.8,1.));//shadow
+diffuse.rgb*=mix(.5,1.,min(min(sun.y,ao)+max(uv1_.x*uv1_.x-sun.y,0.)+(1.-dayw)*.8,1.));//shadow
 if(is(block,1.)||uw>.5)diffuse=water(diffuse,weather,uw,sun.x,day,n);//water
 #ifdef USE_NORMAL
 	else if(uw<.5)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,n.y)*pow5(1.-dot(normalize(-wpos),n))*sun.x*day*(pnoise(cpos.xz,16.,.0625)*.2+.8));//wet
