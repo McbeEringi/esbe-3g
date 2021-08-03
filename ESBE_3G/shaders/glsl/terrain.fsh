@@ -90,7 +90,7 @@ ao=mix(1.,smoothstep(mix(.6,.48,ao),mix(.7,.52,ao),color.g),step(max(max(color.r
 float dusk=min(smoothstep(0.2,0.4,day),smoothstep(0.8,0.6,day));
 float weather=
 #ifdef FOG
-	smoothstep(.3,.8,FOG_CONTROL.x);//.7,.96,FOG_CONTROL.y);
+	smoothstep(.3,.7,FOG_CONTROL.x);
 #else
 	1.;
 #endif
