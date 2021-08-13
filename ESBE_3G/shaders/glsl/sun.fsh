@@ -6,7 +6,6 @@
 	#define HM mediump
 #endif
 #include "fragmentVersionCentroid.h"
-#include "snoise.h"
 #if __VERSION__ >420
 	#define LAYOUT_BINDING(x) layout(binding = x)
 #else

@@ -1,27 +1,30 @@
+//huge thanks to @MCH_YamaRin
 #include "ShaderConstants.fxh"
 #include "util.fxh"
 #include "snoise.fxh"
 #include "pnoise.fxh"
 
-struct PS_Input
-{
+struct PS_Input{
 	float4 position : SV_Position;
-#ifndef BYPASS_PIXEL_SHADER
-	lpfloat4 color : COLOR;
-	snorm float2 uv0 : TEXCOORD_0_FB_MSAA;
-	snorm float2 uv1 : TEXCOORD_1_FB_MSAA;
-#endif
-#ifdef FOG
-	float fog : Fog_Position;
-#endif
-	float block : Block_Type;
-	float3 cpos : Chunked_Position;
-	float3 wpos : Camera_Position;
+	#ifndef BYPASS_PIXEL_SHADER
+		lpfloat4 color : COLOR;
+		snorm float2 uv0 : TEXCOORD_0_FB_MSAA;
+		snorm float2 uv1 : TEXCOORD_1_FB_MSAA;
+	#endif
+	#ifdef FOG
+		float fog : fog;
+	#endif
+	float block : block;
+	float3 cpos : cpos;
+	float3 wpos : wpos;
 };
-struct PS_Output
-{
+struct PS_Output{
 	float4 color : SV_Target;
 };
+#ifdef FANCY
+	#define USE_NORMAL
+#endif
+
 #define linearstep(a,b,x) saturate((x-a)/(b-a))
 bool is(float x,float a){return a-.01<x&&x<a+.01;}
 float pow5(float x){return x*x*x*x*x;}
@@ -57,16 +60,20 @@ float4 water(float3 cpos,float3 wpos,float4 col,float weather,float uw,float sun
 }
 
 ROOT_SIGNATURE
-void main(in PS_Input PSInput, out PS_Output PSOutput)
-{
+void main(in PS_Input PSInput, out PS_Output PSOutput){
 #ifdef BYPASS_PIXEL_SHADER
-    PSOutput.color=0.;
-    return;
+	PSOutput.color=0.;
+	return;
 #else
 
 //=*=*=
-float3 n=normalize(cross(ddx(-PSInput.cpos),ddy(PSInput.cpos)));
-float day=linearstep(TEXTURE_1.Sample(TextureSampler1,0.).r*3.6,1.,TEXTURE_1.Sample(TextureSampler1,float2(0,1)).r);
+float3 n=
+#ifdef USE_NORMAL
+	normalize(cross(ddx(-PSInput.cpos),ddy(PSInput.cpos)));
+#else
+	float3(0,1,0);
+#endif
+float day=linearstep(TEXTURE_1.Sample(TextureSampler1,float2(0,0)).r*3.6,1.,TEXTURE_1.Sample(TextureSampler1,float2(0,1)).r);
 float2 sun=smoothstep(float2(.5,.865),float2(1.,.875),PSInput.uv1.yy);
 float ao=linearstep(.2,.8,day);
 ao=lerp(1.,smoothstep(lerp(.6,.48,ao),lerp(.7,.52,ao),PSInput.color.g),step(max(max(PSInput.color.r,PSInput.color.g),PSInput.color.b)-min(min(PSInput.color.r,PSInput.color.g),PSInput.color.b),0.));
@@ -128,16 +135,16 @@ float4 inColor=PSInput.color;
 #endif
 
 #ifndef ALWAYS_LIT
-	diffuse*=TEXTURE_1.Sample(TextureSampler1,PSInput.uv1);
+	diffuse*=TEXTURE_1.Sample(TextureSampler1,uv1_);
 #endif
 
 #ifndef SEASONS
 	#if !USE_ALPHA_TEST && !defined(BLEND)
-		diffuse.a = inColor.a;
-	#endif	
-	diffuse.rgb *= inColor.rgb;
+		diffuse.a=inColor.a;
+	#endif
+	diffuse.rgb*=inColor.rgb;
 #else
-	float2 uv = inColor.xy;
+	float2 uv=inColor.xy;
 	diffuse.rgb*=lerp(1.,TEXTURE_2.Sample(TextureSampler2,uv).rgb*2.,inColor.b);
 	diffuse.rgb*=inColor.aaa;
 	diffuse.a=1.;
@@ -146,20 +153,19 @@ float4 inColor=PSInput.color;
 //=*=*=
 diffuse.rgb*=lerp(.5,1.,min(min(sun.y,ao)+max(uv1_.x*uv1_.x-sun.y,0.)+(1.-dayw)*.8,1.));//shadow
 if(is(PSInput.block,1.)||uw>.5)diffuse=water(PSInput.cpos,PSInput.wpos,diffuse,weather,uw,sun.x,day,n);//water
+#ifdef USE_NORMAL
 	else if(uw<.5)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,n.y)*pow5(1.-dot(normalize(-PSInput.wpos),n))*sun.x*day*(pnoise(PSInput.cpos.xz,16.,.0625)*.2+.8));//wet
 	diffuse.rgb*=lerp(1.,lerp(dot(n,float3(0.,.8,.6))*.4+.6,max(dot(n,float3(.9,.44,0.)),dot(n,float3(-.9,.44,0.)))*1.3+.2,dusk),sun.x*min(1.25-uv1_.x,1.)*dayw);//flatShading
+#endif
 diffuse.rgb+=uv1_.x*uv1_.x*float3(1,.67,.39)*.1*(1.-sun.x);//light
 diffuse.rgb=tone(diffuse.rgb,ambient);//tonemap
 //=*=*=
-
-//diffuse.rgb=n;
 
 #ifdef FOG
 	diffuse.rgb=lerp(diffuse.rgb,FOG_COLOR.rgb,PSInput.fog);
 #endif
 
-	PSOutput.color=diffuse;
-
+PSOutput.color=diffuse;
 #ifdef VR_MODE
 	PSOutput.color=max(PSOutput.color,1/255.);
 #endif

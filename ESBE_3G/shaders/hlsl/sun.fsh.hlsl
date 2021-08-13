@@ -1,31 +1,29 @@
+//huge thanks to @MCH_YamaRin
 #include "ShaderConstants.fxh"
 #include "util.fxh"
-#include "snoise.fxh"
-struct PS_Input
-{
-    float4 position : SV_Position;
-    float2 uv : TEXCOORD_0_FB_MSAA;
-    float2 rpos : Rotated_Position;
-    float2 pos : Position;
+struct PS_Input{
+	float4 position : SV_Position;
+	float2 uv : TEXCOORD_0_FB_MSAA;
+	float2 rpos : rpos;
+	float2 pos : pos;
 };
-struct PS_Output
-{
-    float4 color : SV_Target;
+struct PS_Output{
+	float4 color : SV_Target;
 };
 ROOT_SIGNATURE
 void main(in PS_Input PSInput, out PS_Output PSOutput){
 
 float4 col=TEXTURE_0.Sample(TextureSampler0,0.);
 if(col.r*col.a<.05){//DEFAULT
-    if(max(abs(PSInput.pos.x),abs(PSInput.pos.y))>.5)discard;
+	if(max(abs(PSInput.pos.x),abs(PSInput.pos.y))>.5)discard;
 	float2 uv_=lerp(float2(floor(PSInput.uv.x*4.)*.25+.125,floor(PSInput.uv.y*2.)*.5+.25),.5,step(.5,TEXTURE_0.Sample(TextureSampler0,.5).r));
 	uv_=(PSInput.uv-uv_)*10.+uv_;
-    col=
-    #if !defined(TEXEL_AA) || !defined(TEXEL_AA_FEATURE) || (VERSION<0xa000) 
-    	TEXTURE_0.Sample(TextureSampler0,uv_);
-    #else
-    	texture2D_AA(TEXTURE_0,TextureSampler0,uv_);
-    #endif
+	col=
+	#if !defined(TEXEL_AA) || !defined(TEXEL_AA_FEATURE) || (VERSION<0xa000)
+		TEXTURE_0.Sample(TextureSampler0,uv_);
+	#else
+		texture2D_AA(TEXTURE_0,TextureSampler0,uv_);
+	#endif
 }else{//ESBE_3G
 	float l=length(PSInput.rpos);
 	float weather=smoothstep(.3,.8,FOG_CONTROL.x);
@@ -51,7 +49,6 @@ if(col.r*col.a<.05){//DEFAULT
 #else
     PSOutput.color=col*CURRENT_COLOR;
 #endif
-
 #ifdef WINDOWSMR_MAGICALPHA
     PSOutput.color.a=133./255.;
 #endif

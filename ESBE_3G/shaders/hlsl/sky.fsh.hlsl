@@ -1,22 +1,23 @@
+//huge thanks to @MCH_YamaRin
 #include "ShaderConstants.fxh"
 #include "snoise.fxh"
 
-struct PS_Input
-{
-    float4 position : SV_Position;
-    float4 color : COLOR;
-    float fog : Fog_Position;
+struct PS_Input{
+	float4 position : SV_Position;
+	float4 color : COLOR;
+	float fog : Fog_Position;
 	float2 pos : Position;
 };
-struct PS_Output
-{
-    float4 color : SV_Target;
+struct PS_Output{
+	float4 color : SV_Target;
 };
+
 float amap(float2 p){return dot(float2(snoise(p),snoise(p*4.+float2(TOTAL_REAL_WORLD_TIME*.02,16))),float2(.8,.3));}
 float cmap(float2 p){
 	float2 t=float2(-TOTAL_REAL_WORLD_TIME,64);
 	return dot(float3(snoise(p*4.+t*.01),snoise(p*16.+t*.1),snoise(p*60.+t*.1)),float3(1,.1,.027));
 }
+
 ROOT_SIGNATURE
 void main(in PS_Input PSInput, out PS_Output PSOutput){
 

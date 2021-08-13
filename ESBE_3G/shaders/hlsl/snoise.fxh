@@ -1,3 +1,4 @@
+//huge thanks to @MCH_YamaRin
 #ifndef SNOISE_H
 #define SNOISE_H
 // (C) Ashima Arts and Stefan Gustavson MIT License

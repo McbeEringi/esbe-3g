@@ -1,56 +1,47 @@
+//huge thanks to @MCH_YamaRin
 #include "ShaderConstants.fxh"
 
-struct VS_Input {
+struct VS_Input{
 	float3 position : POSITION;
-#ifdef USE_SKINNING
-	uint boneId : BONEID_0;
-#endif
+	#ifdef USE_SKINNING
+		uint boneId : BONEID_0;
+	#endif
 	float4 normal : NORMAL;
 	float2 texCoords : TEXCOORD_0;
-#ifdef COLOR_BASED
-	float4 color : COLOR;
-#endif
-#ifdef INSTANCEDSTEREO
-	uint instanceID : SV_InstanceID;
-#endif
+	#ifdef COLOR_BASED
+		float4 color : COLOR;
+	#endif
+	#ifdef INSTANCEDSTEREO
+		uint instanceID : SV_InstanceID;
+	#endif
 };
-
-
-struct PS_Input {
+struct PS_Input{
 	float4 position : SV_Position;
-
 	float4 light : LIGHT;
 	float4 fogColor : FOG_COLOR;
-
-#ifdef GLINT
-	// there is some alignment issue on the Windows Phone 1320 that causes the position
-	// to get corrupted if this is two floats and last in the struct memory wise
-	float4 layerUV : GLINT_UVS;
-#endif
-
-#ifdef COLOR_BASED
-	float4 color : COLOR;
-#endif
-
-#ifdef USE_OVERLAY
-	float4 overlayColor : OVERLAY_COLOR;
-#endif
-
-#ifdef TINTED_ALPHA_TEST
-	// With MSAA Enabled, making this field a float results in a DX11 internal compiler error
-	// We assume it is trying to pack the single float with the centroid-interpolated UV coordinates, which it can't do
-	float4 alphaTestMultiplier : ALPHA_MULTIPLIER;
-#endif
-
+	#ifdef GLINT
+		// there is some alignment issue on the Windows Phone 1320 that causes the position
+		// to get corrupted if this is two floats and last in the struct memory wise
+		float4 layerUV : GLINT_UVS;
+	#endif
+	#ifdef COLOR_BASED
+		float4 color : COLOR;
+	#endif
+	#ifdef USE_OVERLAY
+		float4 overlayColor : OVERLAY_COLOR;
+	#endif
+	#ifdef TINTED_ALPHA_TEST
+		// With MSAA Enabled, making this field a float results in a DX11 internal compiler error
+		// We assume it is trying to pack the single float with the centroid-interpolated UV coordinates, which it can't do
+		float4 alphaTestMultiplier : ALPHA_MULTIPLIER;
+	#endif
 	float2 uv : TEXCOORD_0_FB_MSAA;
-
-
-#ifdef GEOMETRY_INSTANCEDSTEREO
-	uint instanceID : SV_InstanceID;
-#endif
-#ifdef VERTEXSHADER_INSTANCEDSTEREO
-	uint renTarget_id : SV_RenderTargetArrayIndex;
-#endif
+	#ifdef GEOMETRY_INSTANCEDSTEREO
+		uint instanceID : SV_InstanceID;
+	#endif
+	#ifdef VERTEXSHADER_INSTANCEDSTEREO
+		uint renTarget_id : SV_RenderTargetArrayIndex;
+	#endif
 };
 
 static const float AMBIENT = 0.45;
@@ -75,18 +66,18 @@ float lightIntensity(const float4x4 worldMat, const float4 position, const float
 	N.y *= TILE_LIGHT_COLOR.a;
 
 	//take care of double sided polygons on materials without culling
-#ifdef FLIP_BACKFACES
-	float3 viewDir = normalize((mul(worldMat, position)).xyz);
-	if (dot(N, viewDir) > 0.0) {
-		N *= -1.0;
-	}
-#endif
+	#ifdef FLIP_BACKFACES
+		float3 viewDir = normalize((mul(worldMat, position)).xyz);
+		if (dot(N, viewDir) > 0.0) {
+			N *= -1.0;
+		}
+	#endif
 
 	float yLight = (1.0 + N.y) * 0.5;
 	yLight=yLight * (1.0 - AMBIENT) + N.x*N.x * XFAC + N.z*N.z * ZFAC + AMBIENT;
 	return lerp(yLight,dot(N,float3(0.,.8,.6))*.4+.6,smoothstep(.6,.8,TILE_LIGHT_COLOR.b));
 #else
-	return 1.0;
+	return .9;
 #endif
 }
 
@@ -122,7 +113,7 @@ void main(in VS_Input VSInput, out PS_Input PSInput) {
 
 #ifdef GEOMETRY_INSTANCEDSTEREO
 	PSInput.instanceID = VSInput.instanceID;
-#endif 
+#endif
 
 #ifdef VERTEXSHADER_INSTANCEDSTEREO
 	PSInput.renTarget_id = VSInput.instanceID;
@@ -169,4 +160,3 @@ void main(in VS_Input VSInput, out PS_Input PSInput) {
 	PSInput.fogColor.rgb = FOG_COLOR.rgb;
 	PSInput.fogColor.a = clamp(((PSInput.position.z / RENDER_DISTANCE) - FOG_CONTROL.x) / (FOG_CONTROL.y - FOG_CONTROL.x), 0.0, 1.0);
 }
-

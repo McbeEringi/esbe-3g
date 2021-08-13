@@ -1,36 +1,28 @@
+//huge thanks to @MCH_YamaRin
 #include "ShaderConstants.fxh"
 #include "util.fxh"
 
-struct PS_Input {
+struct PS_Input{
 	float4 position : SV_Position;
-
 	float4 light : LIGHT;
 	float4 fogColor : FOG_COLOR;
-
-#ifdef GLINT
-	// there is some alignment issue on the Windows Phone 1320 that causes the position
-	// to get corrupted if this is two floats and last in the struct memory wise
-	float4 layerUV : GLINT_UVS;
-#endif
-
-#ifdef COLOR_BASED
-	float4 color : COLOR;
-#endif
-
-#ifdef USE_OVERLAY
-	float4 overlayColor : OVERLAY_COLOR;
-#endif
-
-#ifdef TINTED_ALPHA_TEST
-	float4 alphaTestMultiplier : ALPHA_MULTIPLIER;
-#endif
-
+	#ifdef GLINT
+		// there is some alignment issue on the Windows Phone 1320 that causes the position
+		// to get corrupted if this is two floats and last in the struct memory wise
+		float4 layerUV : GLINT_UVS;
+	#endif
+	#ifdef COLOR_BASED
+		float4 color : COLOR;
+	#endif
+	#ifdef USE_OVERLAY
+		float4 overlayColor : OVERLAY_COLOR;
+	#endif
+	#ifdef TINTED_ALPHA_TEST
+		float4 alphaTestMultiplier : ALPHA_MULTIPLIER;
+	#endif
 	float2 uv : TEXCOORD_0_FB_MSAA;
-
 };
-
-struct PS_Output
-{
+struct PS_Output{
 	float4 color : SV_Target;
 };
 
@@ -76,7 +68,7 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 #ifdef MASKED_MULTITEXTURE
 	float4 tex1 = TEXTURE_1.Sample(TextureSampler1, PSInput.uv);
 
-	// If tex1 has a non-black color and no alpha, use color; otherwise use tex1 
+	// If tex1 has a non-black color and no alpha, use color; otherwise use tex1
 	float maskedTexture = ceil( dot( tex1.rgb, float3(1.0f, 1.0f, 1.0f) ) * ( 1.0f - tex1.a ) );
 	color = lerp(tex1, color, saturate(maskedTexture));
 #endif // MASKED_MULTITEXTURE
@@ -147,7 +139,7 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 #ifdef MULTIPLICATIVE_TINT
 	float4 tintTex = TEXTURE_1.Sample(TextureSampler1, PSInput.uv);
 
-#ifdef MULTIPLICATIVE_TINT_COLOR 
+#ifdef MULTIPLICATIVE_TINT_COLOR
 	tintTex.rgb = tintTex.rgb * MULTIPLICATIVE_TINT_CHANGE_COLOR.rgb;
 #endif
 
@@ -202,14 +194,14 @@ void main(in PS_Input PSInput, out PS_Output PSOutput)
 	color = glintBlend(color, glint);
 #endif
 
-	//WARNING do not refactor this 
+	//WARNING do not refactor this
 	PSOutput.color = color;
 #ifdef UI_ENTITY
 	PSOutput.color.a *= HUD_OPACITY;
 #endif
 
 #ifdef VR_MODE
-	// On Rift, the transition from 0 brightness to the lowest 8 bit value is abrupt, so clamp to 
+	// On Rift, the transition from 0 brightness to the lowest 8 bit value is abrupt, so clamp to
 	// the lowest 8 bit value.
 	PSOutput.color = max(PSOutput.color, 1 / 255.0f);
 #endif

@@ -1,38 +1,34 @@
+//huge thanks to @MCH_YamaRin
 #include "ShaderConstants.fxh"
 
-struct VS_Input {
+struct VS_Input{
 	float3 position : POSITION;
 	float4 color : COLOR;
 	float2 uv0 : TEXCOORD_0;
 	float2 uv1 : TEXCOORD_1;
-#ifdef INSTANCEDSTEREO
-	uint instanceID : SV_InstanceID;
-#endif
+	#ifdef INSTANCEDSTEREO
+		uint instanceID : SV_InstanceID;
+	#endif
 };
-
-
-struct PS_Input {
+struct PS_Input{
 	float4 position : SV_Position;
-
-#ifndef BYPASS_PIXEL_SHADER
-	lpfloat4 color : COLOR;
-	snorm float2 uv0 : TEXCOORD_0_FB_MSAA;
-	snorm float2 uv1 : TEXCOORD_1_FB_MSAA;
-#endif
-
-#ifdef FOG
-	float fog : Fog_Position;
-#endif
-
-float block : Block_Type;
-float3 cpos : Chunked_Position;
-float3 wpos : Camera_Position;
-#ifdef GEOMETRY_INSTANCEDSTEREO
-	uint instanceID : SV_InstanceID;
-#endif
-#ifdef VERTEXSHADER_INSTANCEDSTEREO
-	uint renTarget_id : SV_RenderTargetArrayIndex;
-#endif
+	#ifndef BYPASS_PIXEL_SHADER
+		lpfloat4 color : COLOR;
+		snorm float2 uv0 : TEXCOORD_0_FB_MSAA;
+		snorm float2 uv1 : TEXCOORD_1_FB_MSAA;
+	#endif
+	#ifdef FOG
+		float fog : fog;
+	#endif
+	float block : block;
+	float3 cpos : cpos;
+	float3 wpos : wpos;
+	#ifdef GEOMETRY_INSTANCEDSTEREO
+		uint instanceID : SV_InstanceID;
+	#endif
+	#ifdef VERTEXSHADER_INSTANCEDSTEREO
+		uint renTarget_id : SV_RenderTargetArrayIndex;
+	#endif
 };
 
 float hash11(float p){p=frac(p*.1031);p*=p+33.33;return frac((p+p)*p);}
@@ -42,8 +38,7 @@ float random(float p){
 }
 
 ROOT_SIGNATURE
-void main(in VS_Input VSInput, out PS_Input PSInput)
-{
+void main(in VS_Input VSInput, out PS_Input PSInput){
 PSInput.block=0.;
 #ifndef BYPASS_PIXEL_SHADER
 	PSInput.uv0=VSInput.uv0;
@@ -85,7 +80,7 @@ float nether=
 	#else
 		PSInput.position=mul(WORLDVIEWPROJ,float4(VSInput.position,1));
 	#endif
-		float3 worldPos=PSInput.position;
+	float3 worldPos=PSInput.position;
 #else
 	float3 worldPos=(VSInput.position.xyz*CHUNK_ORIGIN_AND_SCALE.w)+CHUNK_ORIGIN_AND_SCALE.xyz;
 	float camDist=1.;
@@ -114,17 +109,17 @@ float nether=
 PSInput.cpos=VSInput.position;
 PSInput.wpos=worldPos;
 #ifdef GEOMETRY_INSTANCEDSTEREO
-		PSInput.instanceID = VSInput.instanceID;
-#endif 
+	PSInput.instanceID=VSInput.instanceID;
+#endif
 #ifdef VERTEXSHADER_INSTANCEDSTEREO
-		PSInput.renTarget_id = VSInput.instanceID;
+	PSInput.renTarget_id=VSInput.instanceID;
 #endif
 
 #ifdef FOG
 	float len=length(-worldPos.xyz)/RENDER_DISTANCE;
-#ifdef ALLOW_FADE
-	len+=RENDER_CHUNK_FOG_ALPHA;
-#endif
+	#ifdef ALLOW_FADE
+		len+=RENDER_CHUNK_FOG_ALPHA;
+	#endif
 	PSInput.fog=saturate((len-FOG_CONTROL.x)/(FOG_CONTROL.y-FOG_CONTROL.x));
 	if(nether>.5)PSInput.position.xy+=wav*PSInput.fog*.15*(rand*.5+.5)*nether;
 	else if(uw>.5)PSInput.position.x+=wav*PSInput.fog*.1*rand*uw;

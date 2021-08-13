@@ -66,9 +66,9 @@ float lightIntensity(vec4 position, vec4 normal) {
 			N *= -1.0;
 	#endif
 
-		float yLight = (1.0+N.y) * 0.5;
-		yLight=yLight * (1.0-AMBIENT) + N.x*N.x * XFAC + N.z*N.z * ZFAC + AMBIENT;
-		return mix(yLight,dot(N,vec3(0.,.8,.6))*.4+.6,smoothstep(.6,.8,TILE_LIGHT_COLOR.b));
+	float yLight = (1.0+N.y) * 0.5;
+	yLight=yLight * (1.0-AMBIENT) + N.x*N.x * XFAC + N.z*N.z * ZFAC + AMBIENT;
+	return mix(yLight,dot(N,vec3(0.,.8,.6))*.4+.6,smoothstep(.6,.8,TILE_LIGHT_COLOR.b));
 #else
 	return .9;
 #endif

@@ -1,3 +1,4 @@
+//huge thanks to @MCH_YamaRin
 #ifndef PNOISE_H
 #define PNOISE_H
 float2 hash22(float2 p){
