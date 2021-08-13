@@ -7,6 +7,7 @@ See [release](https://github.com/McbeEringi/esbe-3g/releases)
 
 or  
 [Official(ja)](https://mcbeeringi.github.io/esbe-3g)  
+[MCPEDL](https://mcpedl.com/esbe-3g-shader)  
 # LICENSE
 Published under MITlicense  
 See '[LICENSE](https://github.com/McbeEringi/esbe-3g/blob/master/LICENSE)'  
