@@ -99,10 +99,10 @@ float nether=
 		PSInput.position=mul(PROJ,PSInput.position);
 	#endif
 	#ifdef ALPHA_TEST
-		float2 hgd=abs(frac(frp.xz*16.)-.5);
-		if((max(max(VSInput.color.r,VSInput.color.g),VSInput.color.b)-min(min(VSInput.color.r,VSInput.color.g),VSInput.color.b)>.01&&frp.y!=.015625)||
+		float2 hexg=frac(frp.xz*16.);float2 frpd=abs(frp.xz-.5);
+		if((max(max(VSInput.color.r,VSInput.color.g),VSInput.color.b)-min(min(VSInput.color.r,VSInput.color.g),VSInput.color.b)>.01&&frp.y!=.015625&&frpd.x!=.484375&&frpd.y!=.484375)||
 			(frp.y==.9375&&(frp.x==0.||frp.z==0.))||
-			((frp.y==0.||frp.y>.6)&&hgd.x<.48&&hgd.y<.48))PSInput.position.x+=wav*.016*rand*sun*PROJ[0].x;
+			((frp.y==0.||frp.y>.6)&&hexg.x!=0.&&hexg.y!=0.&&frpd.x>.1&&frpd.y>.1))PSInput.position.x+=wav*.016*rand*sun*PROJ[0].x;
 	#endif
 
 #endif

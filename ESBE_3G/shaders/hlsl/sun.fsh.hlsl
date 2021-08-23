@@ -45,12 +45,12 @@ if(col.r*col.a<.05){//DEFAULT
 }
 
 #ifdef IGNORE_CURRENTCOLOR
-    PSOutput.color=col;
+	PSOutput.color=col;
 #else
-    PSOutput.color=col*CURRENT_COLOR;
+	PSOutput.color=col*CURRENT_COLOR;
 #endif
 #ifdef WINDOWSMR_MAGICALPHA
-    PSOutput.color.a=133./255.;
+	PSOutput.color.a=133./255.;
 #endif
 
 }

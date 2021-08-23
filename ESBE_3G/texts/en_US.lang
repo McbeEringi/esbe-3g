@@ -1,9 +1,9 @@
 esbe.v=v2.2
 esbe.c0=Added support for old Windows10
 esbe.c1=> huge thanks to @MCH_YamaRin
-esbe.c2=
-esbe.c3=
-esbe.c4=
+esbe.c2=Added…
+esbe.c3=Fixed stripe bug on aurora
+esbe.c4=Fixed bug that iron bars and redstone waving
 esbe.c5=
 esbe.c6=
 esbe.c7=

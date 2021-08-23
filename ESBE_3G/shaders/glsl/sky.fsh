@@ -34,7 +34,7 @@ vec4 col=vec4(mix(
 smoothstep(.1,.5,l)),1);
 //AURORA
 if(aflag>0.){
-	vec2 apos=vec2(pos.x+TOTAL_REAL_WORLD_TIME*.004,pos.y*10.);apos.y+=sin(pos.x*20.-TOTAL_REAL_WORLD_TIME*.1)*.1;
+	HM vec2 apos=vec2(pos.x+TOTAL_REAL_WORLD_TIME*.004,pos.y*10.);apos.y+=sin(pos.x*20.-TOTAL_REAL_WORLD_TIME*.1)*.1;
 	vec3 acol=mix(
 		vec3(0.,.8,.4),//col1
 		vec3(.4,.2,.8),//col2
