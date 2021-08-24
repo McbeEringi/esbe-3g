@@ -59,7 +59,7 @@ HM vec4 water(HM vec4 col,float weather,float uw,float sun,float day,HM vec3 n){
 	vec4 col_=col*mix(1.,mix(1.4,1.6,uw),pow(1.-abs(h)*.5,mix(1.5,2.5,uw)));
 	if(!bool(uw)){
 		HM vec3 rpos=reflect(wpos,n);
-		HM vec2 spos=(rpos.xz+h*rpos.xz/max(rpos.y,1.)*1.5)*pow(rpos.y,-.8);//*sign(rpos.y);
+		HM vec2 spos=(rpos.xz+h*rpos.xz/max(abs(rpos.y),1.)*1.5)*pow(rpos.y,-.8);//*sign(rpos.y);
 		HM vec2 srad=normalize(vec2(length(spos),1));
 		vec4 scol=mix(mix(vec4(FOG_COLOR.rgb,1),col,srad.y),vec4((vec3(mix(.2,1.,day))+FOG_COLOR.rgb)*.5,1),smoothstep(mix(-.6,.3,weather),.9,cmap(spos*.04))*step(0.,rpos.y));
 		#ifdef USE_NORMAL
