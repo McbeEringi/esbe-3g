@@ -48,7 +48,7 @@ float4 water(float3 cpos,float3 wpos,float4 col,float weather,float uw,float sun
 	float4 col_=col*lerp(1.,lerp(1.4,1.6,uw),pow(1.-abs(h)*.5,lerp(1.5,2.5,uw)));
 	if(!bool(uw)){
 		float3 rpos=reflect(wpos,n);
-		float2 spos=(rpos.xz+h*rpos.xz/max(rpos.y,1.)*1.5)/rpos.y;
+		float2 spos=(rpos.xz+h*rpos.xz/max(rpos.y,1.)*1.5)*pow(rpos.y,-.8);//*sign(rpos.y);
 		float2 srad=normalize(float2(length(spos),1));
 		float4 scol=lerp(lerp(float4(FOG_COLOR.rgb,1),col,srad.y),float4((lerp(.2,1.,day)+FOG_COLOR.rgb)*.5,1),smoothstep(lerp(-.6,.3,weather),.9,cmap(spos*.04))*step(0.,rpos.y));
 		#ifdef USE_NORMAL

@@ -38,7 +38,7 @@ if(aflag>0.){
 	vec3 acol=mix(
 		vec3(0.,.8,.4),//col1
 		vec3(.4,.2,.8),//col2
-	sin(apos.x+apos.y+TOTAL_REAL_WORLD_TIME*.01)*.5+.5);
+	sin(dot(apos,vec2(1))+TOTAL_REAL_WORLD_TIME*.01)*.5+.5);
 	col.rgb+=acol*smoothstep(.5,1.,amap(apos))*smoothstep(.5,0.,l)*aflag;
 }
 //CLOUDS
