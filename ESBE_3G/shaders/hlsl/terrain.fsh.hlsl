@@ -151,7 +151,7 @@ float4 inColor=PSInput.color;
 #endif
 
 //=*=*=
-diffuse.rgb*=lerp(.5,1.,min(min(sun.y,ao)+max(uv1_.x*uv1_.x-sun.y,0.)+(1.-dayw)*.8,1.));//shadow
+diffuse.rgb*=lerp(.5,1.,min(min(sun.y,ao)+max(uv1_.x*uv1_.x-min(sun.y,ao),0.)+(1.-dayw)*.8,1.));//shadow
 if(is(PSInput.block,1.)||uw>.5)diffuse=water(PSInput.cpos,PSInput.wpos,diffuse,weather,uw,sun.x,day,n);//water
 #ifdef USE_NORMAL
 	else if(uw<.5)diffuse.rgb=lerp(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,n.y)*pow5(1.-dot(normalize(-PSInput.wpos),n))*sun.x*day*(pnoise(PSInput.cpos.xz,16.,.0625)*.2+.8));//wet

@@ -161,7 +161,7 @@ vec4 inColor=color;
 #endif
 
 //=*=*=
-diffuse.rgb*=mix(.5,1.,min(min(sun.y,ao)+max(uv1_.x*uv1_.x-sun.y,0.)+(1.-dayw)*.8,1.));//shadow
+diffuse.rgb*=mix(.5,1.,min(min(sun.y,ao)+max(uv1_.x*uv1_.x-min(sun.y,ao),0.)+(1.-dayw)*.8,1.));//shadow
 if(is(block,1.)||uw>.5)diffuse=water(diffuse,weather,uw,sun.x,day,n);//water
 #ifdef USE_NORMAL
 	else if(uw<.5)diffuse.rgb=mix(diffuse.rgb,ambient.rgb,(1.-weather)*smoothstep(-.7,1.,n.y)*pow5(1.-dot(normalize(-wpos),n))*sun.x*day*(pnoise(cpos.xz,16.,.0625)*.2+.8));//wet
