@@ -80,7 +80,7 @@ float nether=
 		if(abs(frp.x-.5)==.125 && frp.z==0.)worldPos.x+=wav*.05*rand;
 		else if(abs(frp.z-.5)==.125 && frp.x==0.)worldPos.z+=wav*.05*rand;
 	#endif
-	if(block==1.)worldPos.y+=wav*.05*fract(floor(POSITION.y*16.+.5)*.0625)*rand*sun*(1.-camDist);
+	if(block==1.)worldPos.y+=wav*.05*fract(floor(POSITION.y*32.+.5)*.03125)*rand*sun*(1.-camDist);
 	POS4 pos=WORLDVIEW*worldPos;
 	pos=PROJ*pos;
 	#ifdef ALPHA_TEST

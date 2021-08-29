@@ -90,7 +90,7 @@ float nether=
 		if(abs(frp.x-.5)==.125 && frp.z==0.)worldPos.x+=wav*.05*rand;
 		else if(abs(frp.z-.5)==.125 && frp.x==0.)worldPos.z+=wav*.05*rand;
 	#endif
-	if(PSInput.block==1.)worldPos.y+=wav*.05*frac(floor(VSInput.position.y*16.+.5)*.0625)*rand*sun*(1.-camDist);
+	if(PSInput.block==1.)worldPos.y+=wav*.05*frac(floor(VSInput.position.y*32.+.5)*.03125)*rand*sun*(1.-camDist);
 	#ifdef INSTANCEDSTEREO
 		PSInput.position=mul(WORLDVIEW_STEREO[VSInput.instanceID],float4(worldPos,1));
 		PSInput.position=mul(PROJ_STEREO[VSInput.instanceID],PSInput.position);
