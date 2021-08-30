@@ -1,9 +1,9 @@
 esbe.v=v2.2
-esbe.c0=Added support for old Windows10
-esbe.c1=> huge thanks to @MCH_YamaRin
-esbe.c2=Fixed stripe bug on aurora
-esbe.c3=Fixed bug that iron bars, redstone and water seams waving
-esbe.c4=Fixed bug side shadow won't disappear with torch at night
-esbe.c5=Improved position of cloud reflection of water
-esbe.c6=
-esbe.c7=
+esbe.c0=Added support for old Windows10…huge thanks to @MCH_YamaRin
+esbe.c1=Fixed stripe bug on aurora
+esbe.c2=Fixed bug that iron bars, redstone and water seams waving
+esbe.c3=Fixed bug side shadow won't disappear with torch at night
+esbe.c4=Improved position of cloud reflection of water
+esbe.c5=
+esbe.c6=Known issue:
+esbe.c7=sun & moon disappear with antialiasing enabled
