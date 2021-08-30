@@ -1,4 +1,4 @@
-c// __multiversion__
+// __multiversion__
 // This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.
 #include "vertexVersionCentroid.h"
 #ifndef BYPASS_PIXEL_SHADER
